@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.example.SmartBoard?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!--?import com.example.BoardDisplayer?-->
+
+<BorderPane prefHeight="606.0" prefWidth="699.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.MainWindowController">
+   <left>
+      <VBox prefHeight="404.0" prefWidth="47.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#startGame" prefHeight="25.0" prefWidth="82.0" text="Start Game" />
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="stop" />
+         </children>
+      </VBox>
+   </left>
+   <bottom>
+      <HBox prefHeight="0.0" prefWidth="871.0" BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="541.0" prefWidth="823.0" BorderPane.alignment="CENTER">
+         <left>
+            <SmartBoard prefHeight="561.0" prefWidth="823.0" BorderPane.alignment="CENTER" />
+         </left>
+      </BorderPane>
+   </center>
+   
+</BorderPane>

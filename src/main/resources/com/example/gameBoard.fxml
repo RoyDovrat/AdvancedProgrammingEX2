@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="683.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+      <VBox prefHeight="467.0" prefWidth="109.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="startGameButton" mnemonicParsing="false" onAction="#setNewGameBoard" text="Start new game">
+               <contextMenu>
+                  <ContextMenu>
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                    </items>
+                  </ContextMenu>
+               </contextMenu></Button>
+            <MenuButton fx:id="TileDirection" mnemonicParsing="false" prefHeight="27.0" prefWidth="136.0" text="Tile Direction">
+              <items>
+                <MenuItem fx:id="TileDown" mnemonicParsing="false" onAction="#downClicked" text="Vertical" />
+                  <MenuItem fx:id="TileRight" mnemonicParsing="false" onAction="#LeftRightClicked" text="Horizonal" />
+              </items>
+            </MenuButton>
+            <TextField fx:id="vWordInput" />
+            <Label fx:id="validWord" prefHeight="29.0" prefWidth="71.0" text="word valid?" />
+            <Label fx:id="RowBoard" text="Row: " />
+            <Label fx:id="ColBoard" text="Col:" />
+            <Button mnemonicParsing="false" onAction="#submitWord" text="submit word" />
+            <Label fx:id="score" text="score" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <Canvas fx:id="myCanvas" height="500.0" onMouseClicked="#handleMouseClick" width="500.0" BorderPane.alignment="CENTER" />
+   </center>
+   <top>
+      <HBox prefHeight="2.0" prefWidth="683.0" BorderPane.alignment="CENTER" />
+   </top>
+   <right>
+      <VBox prefHeight="553.0" prefWidth="45.0" spacing="5" BorderPane.alignment="CENTER">
+         <children>
+            <Canvas fx:id="LetterTilesCanvas" height="500.0" width="81.0" />
+         </children>
+      </VBox>
+   </right>
+</BorderPane>
