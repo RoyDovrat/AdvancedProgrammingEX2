@@ -13,7 +13,6 @@ import ViewModel.view_model;
 public class App extends Application {
 
     private static Scene scene;
-    int num;
     
     @Override
     public void start(Stage stage) throws IOException{
