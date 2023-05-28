@@ -13,7 +13,8 @@ import ViewModel.view_model;
 public class App extends Application {
 
     private static Scene scene;
-
+    int num;
+    
     @Override
     public void start(Stage stage) throws IOException{
         scene = new Scene(loadFXML("gameEntry"), 900, 640);
