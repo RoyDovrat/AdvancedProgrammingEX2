@@ -50,6 +50,7 @@ BoardDisplayer gameBoard= new BoardDisplayer();
         });
     }
     */
+    /* 
     @FXML
     public void startGame(){
         System.out.println("Start");
@@ -69,6 +70,7 @@ BoardDisplayer gameBoard= new BoardDisplayer();
             System.out.println(chosen.getName());
         }
     }
+    */
     
 
 }

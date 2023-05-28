@@ -34,16 +34,23 @@ public class modelGuest extends Observable implements interfaceModel {
 			//in.close();
 			//out.close();
 			//server.close();
+            
+            System.out.println("in model guest line1 "+line);
 		} catch (IOException e) {
 			System.out.println("your code ran into an IOException (-10)");
 		}
-         /* From geeks for geeks */
+         
  
          // keep reading until "Over" is input
-        //while (!line.equals("over")) {
+         Runnable r= ()->{
+            while (!line.equals("over")) {
+                System.out.println("1");
+                //out.writeUTF(line);
+            }
+        };
+        new Thread(r).start();
 
-        //while(!flag){}
-        //line = in.next();
+    
         System.out.println("in model guest line "+line);
             
         //}

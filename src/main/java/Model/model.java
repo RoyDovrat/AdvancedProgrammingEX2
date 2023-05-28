@@ -75,7 +75,7 @@ public class model extends Observable implements interfaceModel{
         } 
         fillLetterTilesFromBag();
         for (int i = 0; i < letterTiles.length; i++) { //for debug
-            System.out.println(letterTiles[i].tileToString(letterTiles[i]));
+            //System.out.println(letterTiles[i].tileToString(letterTiles[i]));
             mCharLetterTiles[i]=letterTiles[i].getLetter();  
         }
         mStrLetterTiles = new String(mCharLetterTiles);

@@ -44,6 +44,8 @@ public class BoardDisplayer implements Observer {
 
     @FXML
     String vStrLetterTiles;
+    @FXML
+    Button submitButton;
 
     @FXML
     TextField vWordInput;
@@ -73,7 +75,7 @@ public class BoardDisplayer implements Observer {
     Label ColBoard, RowBoard;
 
     @FXML
-    Label score;
+    Label score, NoNameError;
     @FXML 
     TextField PlayerName;
 
@@ -115,16 +117,32 @@ public class BoardDisplayer implements Observer {
 
     @FXML
     public void setNewGameBoard(){
-        vm.vmSetPlayerName();
-        sendGameMode(gameEntryController.isHost);
-        vm.vmInitGame();
-        redraw();
-        vLetterTiles=vm.vmRestartLetterTiles();
-        drawLetterTiles(vLetterTiles);
-        shutStartButton();
+        vWordInput.setVisible(true);
+        validWord.setVisible(true);
+        TileDirection.setVisible(true);
+        RowBoard.setVisible(true);
+        ColBoard.setVisible(true);
+        submitButton.setVisible(true);
+        score.setVisible(true);
+        if (PlayerName!=null){
+            vm.vmSetPlayerName();
+            sendGameMode(gameEntryController.isHost);
+            vm.vmInitGame();
+            redraw();
+            vLetterTiles=vm.vmRestartLetterTiles();
+            drawLetterTiles(vLetterTiles);
+            shutStartButton();
+        }
+        else{
+            NoNameError.setText("Enter Name");
+        }
+
     }
+    
     public void sendGameMode(boolean isHost){
+        
         vm.vmSendGameMode(isHost);
+        
     }
     public void drawLetterTiles(char[] letterTiles) {
         Double W = LetterTilesCanvas.getWidth();
@@ -217,6 +235,15 @@ public class BoardDisplayer implements Observer {
 
     public void createImage(){
         
+    }
+    public void initialize() {
+        vWordInput.setVisible(false);
+        validWord.setVisible(false);
+        TileDirection.setVisible(false);
+        RowBoard.setVisible(false);
+        ColBoard.setVisible(false);
+        submitButton.setVisible(false);
+        score.setVisible(false);
     }
 
     public void redraw(){
@@ -340,4 +367,5 @@ public class BoardDisplayer implements Observer {
         }
         // throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
+    
 }

@@ -81,7 +81,6 @@ public class MyServer {
         }
     }
 
-
     private void startServer() throws IOException{
         try {
             ServerSocket server = new ServerSocket(port);

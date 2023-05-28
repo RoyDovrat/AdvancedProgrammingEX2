@@ -24,6 +24,7 @@
                     </items>
                   </ContextMenu>
                </contextMenu></Button>
+            <Label fx:id="NoNameError" />
             <MenuButton fx:id="TileDirection" mnemonicParsing="false" prefHeight="27.0" prefWidth="136.0" text="Tile Direction">
               <items>
                 <MenuItem fx:id="TileDown" mnemonicParsing="false" onAction="#downClicked" text="Vertical" />
@@ -34,7 +35,7 @@
             <Label fx:id="validWord" prefHeight="29.0" prefWidth="71.0" text="word valid?" />
             <Label fx:id="RowBoard" text="Row: " />
             <Label fx:id="ColBoard" text="Col:" />
-            <Button mnemonicParsing="false" onAction="#submitWord" text="submit word" />
+            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#submitWord" text="submit word" />
             <Label fx:id="score" text="score" />
          </children>
       </VBox>
