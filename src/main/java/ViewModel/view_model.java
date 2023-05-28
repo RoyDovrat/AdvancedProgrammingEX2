@@ -1,5 +1,6 @@
 package ViewModel;
 
+import java.security.PublicKey;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.function.IntPredicate;
@@ -22,6 +23,7 @@ public class view_model extends Observable implements Observer{
     public BooleanProperty vmValidWord;
     public IntegerProperty vmScore;
     public StringProperty vmStrLetterTiles;
+    public StringProperty vmPlayerName;
     public char[] vmLetterTiles;
     
 
@@ -31,6 +33,7 @@ public class view_model extends Observable implements Observer{
         vmValidWord=new SimpleBooleanProperty();
         vmStrLetterTiles=new SimpleStringProperty();
         vmScore=new SimpleIntegerProperty();
+        vmPlayerName=new SimpleStringProperty();
     }
 
     public char[][] vmSubmitWord(int mouseRow, int mouseCol){
@@ -78,6 +81,10 @@ public class view_model extends Observable implements Observer{
         return m.mGetTw();
     }
     
+    public void vmSetPlayerName(){
+        m.setPlayerName(vmPlayerName.get());
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         if(o==m){ 
@@ -85,5 +92,9 @@ public class view_model extends Observable implements Observer{
             (vmScore).set(m.getScore());//getScore
         }
         //throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+
+    public void vmInitGame() {
+        m.mInitGame();
     }
 }

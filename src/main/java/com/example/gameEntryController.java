@@ -4,6 +4,7 @@ import java.io.IOException;
 import ViewModel.view_model;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
 
 public class gameEntryController {
     public static boolean isHost;

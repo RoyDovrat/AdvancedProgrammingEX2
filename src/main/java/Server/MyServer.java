@@ -32,12 +32,55 @@ public class MyServer {
 
         new Thread(() -> {
 			try {
-				startServer();
+				startServer(ch);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}).start();
     }
+
+    private void startServer(ClientHandler chNew) throws IOException{
+        try {
+            ServerSocket server = new ServerSocket(port);
+            server.setSoTimeout(1000);
+            while(!stop) {
+                try {
+                    Socket client=server.accept();
+                    sockets.add(client);
+                    executor.execute(() -> 
+                        {
+                            try {
+                            	 Class<? extends ClientHandler> chClass = this.ch.getClass();
+                                 try {
+									//ClientHandler chNew = chClass.getDeclaredConstructor().newInstance();
+                        
+									chNew.handleClient(client.getInputStream(), client.getOutputStream());
+									
+									client.close();
+								} catch (IllegalArgumentException| SecurityException e) {
+									e.printStackTrace();
+								}
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                } catch(SocketTimeoutException e) {}
+            }
+            server.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            executor.shutdown();
+            for (Socket socket : sockets) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     private void startServer() throws IOException{
         try {
@@ -53,6 +96,7 @@ public class MyServer {
                             	 Class<? extends ClientHandler> chClass = this.ch.getClass();
                                  try {
 									ClientHandler chNew = chClass.getDeclaredConstructor().newInstance();
+                        
 									chNew.handleClient(client.getInputStream(), client.getOutputStream());
 									
 									client.close();

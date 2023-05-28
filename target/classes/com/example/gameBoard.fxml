@@ -15,6 +15,7 @@
    <left>
       <VBox prefHeight="467.0" prefWidth="109.0" BorderPane.alignment="CENTER">
          <children>
+            <TextField fx:id="PlayerName" promptText="Enter Name" />
             <Button fx:id="startGameButton" mnemonicParsing="false" onAction="#setNewGameBoard" text="Start new game">
                <contextMenu>
                   <ContextMenu>
@@ -29,7 +30,7 @@
                   <MenuItem fx:id="TileRight" mnemonicParsing="false" onAction="#LeftRightClicked" text="Horizonal" />
               </items>
             </MenuButton>
-            <TextField fx:id="vWordInput" />
+            <TextField fx:id="vWordInput" promptText="Enter Word" />
             <Label fx:id="validWord" prefHeight="29.0" prefWidth="71.0" text="word valid?" />
             <Label fx:id="RowBoard" text="Row: " />
             <Label fx:id="ColBoard" text="Col:" />

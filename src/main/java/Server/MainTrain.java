@@ -107,7 +107,8 @@ public class MainTrain {
 	}
 	
 	public static void testDM() {
-		String t1[]=writeFile("t1.txt");
+		
+		String t1[]=writeFile("./searchFiles/alice_in_wonderland.txt");
 		String t2[]=writeFile("t2.txt");
 		String t3[]=writeFile("t3.txt");
 		

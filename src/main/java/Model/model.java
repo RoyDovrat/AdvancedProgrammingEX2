@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
 import java.util.Random;
@@ -17,16 +18,17 @@ import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
 import Server.ClientHandler;
+import Server.DictionaryManager;
 import Server.MyServer;
 import Server.MainTrain.ClientHandler1;
 
-public class model extends Observable {
+public class model extends Observable implements interfaceModel{
     byte[][] boardData;
     Board board=new Board();
     boolean mValidWord;
     Tile[] letterTiles = new Tile[7];
     Tile.Bag bag = new Tile.Bag();
-    String mStrLetterTiles;
+    String mStrLetterTiles, mPlayerName;
     boolean isVertical=false;
     int mScore;
     static boolean mIsHost=false;
@@ -34,215 +36,33 @@ public class model extends Observable {
     static String mWordInput;
     private static CountDownLatch latch;
     private Socket          socket   = null;
-    private ServerSocket    host   = null;
+    //private ServerSocket    host   = null;
     private DataInputStream in       =  null;
-    /* 
+    MyServer host;
+    ArrayList<String> players = new ArrayList<String>();
+    modelGuest guest;
 
-    public model(int port){
-        try{
-            host=new ServerSocket(port);
-            System.out.println("Server started");
- 
-            System.out.println("Waiting for a client ...");
- 
-            socket = host.accept();
-            System.out.println("Client accepted");
-            in = new DataInputStream(
-                new BufferedInputStream(socket.getInputStream()));
-            String line = "";
-            while (!line.equals("Over"))
-            {
-                try
-                {
-                    line = in.readUTF();
-                    System.out.println(line);
+   
+    public void initServerForGuest(int port){
+        int numOfPlayers=2;
+        host=new MyServer(port, new modelClientHandler(numOfPlayers, this), 4);
+        host.start(); //server of Host
+    }
     
-                }
-                catch(IOException i)
-                {
-                    System.out.println(i);
-                }
-            }
-            System.out.println("Closing connection");
- 
-            // close connection
-            socket.close();
-            in.close();
-        }catch(IOException i){
-            System.out.println(i);
-        }
+    public void setPlayerName(String Name){
+        mPlayerName=Name;
+        players.add(mPlayerName);
+        System.out.println("name in model: "+mPlayerName);
+        setGuest();
     }
 
-    public class Client {
-        // initialize socket and input output streams
-        private Socket socket = null;
-        private DataInputStream input = null;
-        private DataOutputStream out = null;
-        private byte[][] boardData;
-        public Client(String address, int port){
-        // establish a connection
-            try {
-                socket = new Socket(address, port);
-                System.out.println("Connected");
-    
-                // takes input from terminal
-                input = new DataInputStream(System.in);
-    
-                // sends output to the socket
-                out = new DataOutputStream(
-                    socket.getOutputStream());
-            }
-            catch (UnknownHostException u) {
-                System.out.println(u);
-                return;
-            }
-            catch (IOException i) {
-                System.out.println(i);
-                return;
-            }
-     
-            // string to read message from input
-            String line = "";
-            // keep reading until "Over" is input
-            while (!line.equals("Over")) {
-                try {
-                    line = input.readLine();
-                    out.writeUTF(line);
-                }
-                catch (IOException i) {
-                    System.out.println(i);
-                }
-            }
-    
-            // close the connection
-            try {
-                input.close();
-                out.close();
-                socket.close();
-            }
-            catch (IOException i) {
-                System.out.println(i);
-            }
-        }
+    public void setGuest(){
+        guest= new modelGuest(mPlayerName);
+        initServerForGuest(5000);
+        guest.createConnection(5000);
+
     }
-    /* 
-    public static class ClientHandler1 implements ClientHandler{
-		PrintWriter out;
-		Scanner in;		
-		@Override
-		public void handleClient(InputStream inFromclient, OutputStream outToClient) {
-			out=new PrintWriter(outToClient);
-			in=new Scanner(inFromclient);
-			String text = in.next();
-            System.out.println("in client handler: "+text);
-
-			out.println(text);
-			out.flush();
-		}
-
-		@Override
-		public void close() {
-			in.close();
-			out.close();
-		}
-		
-	}
     
-    public static boolean testServer() {
-        //latch = new CountDownLatch(1
-		boolean ok=true;
-		Random r=new Random();
-		int port=6000+r.nextInt(1000);
-		MyServer s=new MyServer(port, new ClientHandler1(),3);
-		int c = Thread.activeCount();
-		s.start(); // runs in the background
-        //latch.countDown(); // Signal that the server is ready
-		try {
-            if (mIsHost==true){
-                Host(port);
-            }
-            else{
-                client1(port);
-			    //client1(port);
-			    //client1(port);
-			    //client1(port);
-            }
-
-		}catch(Exception e) {
-			System.out.println("some exception was thrown while testing your server, cannot continue the test (-100)");			
-			ok=false;
-		}
-		try {Thread.sleep(2000);} catch (InterruptedException e) {}
-		s.close();
-		
-		try {Thread.sleep(2000);} catch (InterruptedException e) {}
-		
-		if (Thread.activeCount()!=c) {
-			System.out.println("you have a thread open after calling close method (-100)");
-			ok=false;
-		}
-		return ok;
-	}
-    */
-    /* 
-    public  void Host(int port) {		
-		new Thread(
-		()->{
-			try{
-				Socket host=new Socket("localhost", port);	
-                PrintWriter outToClient=new PrintWriter(host.getOutputStream());
-				Scanner in=new Scanner(host.getInputStream());	
-				
-				
-				String input=in.next();
-                System.out.println("in host: "+input);
-
-				in.close();
-				outToClient.close();
-				host.close();
-			}catch (Exception e){
-				System.out.println("Exception was thrown when running a client (-25)");
-			}
-		}).start();
-	}
-    
-    public void client1(int port) {		
-		new Thread(
-		()->{
-			try{
-                
-				Socket host=new Socket("localhost", port);		
-                PrintWriter outToHost=new PrintWriter(host.getOutputStream());
-                Scanner in=new Scanner(host.getInputStream());
-
-                
-                //String newWord=
-                //Random r=new Random();
-				
-				//Random revital=new Random();
-				//int randomNum = revital.nextInt(100);
-				//String text = ""+(1000+r.nextInt(100000));
-				//String rev=new StringBuilder(text).reverse().toString();
-                
-                String wordOutput= mWordInput;
-                System.out.println("in client"+wordOutput);
-				outToHost.println(wordOutput);
-				outToHost.flush();
-				
-				//String response=in.next();
-                
-				if(response==null||!response.equals(rev)) 
-					System.out.println("problem getting the right response from your server, cannot continue the test (-25)");
-				
-                in.close();
-				outToHost.close();
-				host.close();
-			}catch (Exception e){
-				System.out.println("Exception was thrown when running a client (-25)");
-			}
-		}).start();
-	}
-	*/
     public void setBoardData(byte[][] bonusMatrix) {
         this.boardData = bonusMatrix;
         //redraw();
@@ -261,6 +81,7 @@ public class model extends Observable {
         mStrLetterTiles = new String(mCharLetterTiles);
         return mCharLetterTiles;
     }
+    
     public char[] fillLetterTilesFromBag(){
         char[] mCharLetterTiles=new char[7];
         for (int i = 0; i < letterTiles.length; i++) {
@@ -330,17 +151,36 @@ public class model extends Observable {
     }
     
     public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
+        boolean ok=true;
+		Random r=new Random();
+		int port=6000+r.nextInt(1000);
+		MyServer s=new MyServer(port, new ClientHandler1(),3);
+        s.start();
         mWordInput=wordInput;
+        DictionaryManager dm=DictionaryManager.get();
+		
+		boolean ans = dm.query("./searchFiles/alice_in_wonderland.txt",
+        /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
+        
         //mValidWord=validateWordInput(wordInput);
+        System.out.println("in file query? "+ans);
+        if (ans==true){
+            ans=dm.challenge("./searchFiles/alice_in_wonderland.txt",
+            /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
+        }
+        System.out.println("in file challange? "+ans);
         wordSentFlag=true;
         Tile[] tiles=wordInputToTiles(wordInput);
         Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
         System.out.println("newWord.toString()");
         if(board.boardLegal(newWord) && validateWordInput(wordInput)){
+            guest.line=wordInput;
+            guest.flag=true;
             mScore= board.tryPlaceWord(newWord);
             mValidWord=true;
             removeTilesFromLetterTiles(newWord);
             fillLetterTilesFromBag();
+            guest.line="over";
         }
         
         setChanged();
@@ -356,7 +196,6 @@ public class model extends Observable {
         isVertical=true;
     }
     
-
     public boolean validateWordInput(String wordInput) {
         // Create a copy of the Tile array to track tile usage
         Tile[] tilesCopy = Arrays.copyOf(letterTiles, letterTiles.length);
@@ -434,6 +273,11 @@ public class model extends Observable {
         */
         //boolean ok=testServer();
         //System.out.println("Server is working? "+ok);
+    }
+
+    public void mInitGame() {
+        //setPlayerName();
+        
     }
         
 }

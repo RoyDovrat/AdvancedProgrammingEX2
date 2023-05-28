@@ -74,6 +74,8 @@ public class BoardDisplayer implements Observer {
 
     @FXML
     Label score;
+    @FXML 
+    TextField PlayerName;
 
     public BoardDisplayer(){
         //wallFileName=new SimpleStringProperty();
@@ -84,6 +86,7 @@ public class BoardDisplayer implements Observer {
     public void setViewModel(view_model vm) {
         this.vm=vm;
         vm.wordInput.bind(vWordInput.textProperty());//הלוך
+        vm.vmPlayerName.bind(PlayerName.textProperty());
         validWord.textProperty().bind((vm.vmValidWord.asString()));//חזור
         //score.textProperty().bind(vm.vmScore);
         StringProperty scoreText = new SimpleStringProperty();
@@ -107,11 +110,14 @@ public class BoardDisplayer implements Observer {
    
     public void shutStartButton(){
         this.startGameButton.setVisible(false);
+        this.PlayerName.setVisible(false);
     }
 
     @FXML
     public void setNewGameBoard(){
+        vm.vmSetPlayerName();
         sendGameMode(gameEntryController.isHost);
+        vm.vmInitGame();
         redraw();
         vLetterTiles=vm.vmRestartLetterTiles();
         drawLetterTiles(vLetterTiles);
@@ -148,7 +154,6 @@ public class BoardDisplayer implements Observer {
     
     @FXML
     public void submitWord(){
-        
         
         System.out.println("word input in view: "+vWordInput.getText());
         boardChars=vm.vmSubmitWord(mouseRow,mouseCol); 
