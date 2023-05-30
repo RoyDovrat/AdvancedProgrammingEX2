@@ -12,10 +12,14 @@ import java.util.concurrent.TimeUnit;
 public class modelGuest extends Observable implements interfaceModel {
     PrintWriter out;
     Scanner in;
-    String playerName;
+    String mPlayerName, line = "", mStrLetterTiles;
     Socket server;
-    String line = "";
-    Boolean flag=false;
+    boolean flag=false, mIsHost=false, isVertical=false, mValidWord;
+    Board board=new Board();
+    byte[][] boardData;
+    int mScore;
+
+    /* 
     public modelGuest(String name){
         this.playerName=name;
     }
@@ -63,16 +67,81 @@ public class modelGuest extends Observable implements interfaceModel {
             System.out.println(i);
         }
     }
+    */
+    
     @Override
-    public char[] restartLetterTiles() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'restartLetterTiles'");
+    public void setPlayerName(String Name) { //send name to host
+        mPlayerName=Name;
+        System.out.println("name in model: "+mPlayerName);
     }
 
     @Override
-    public char[] fillLetterTilesFromBag() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fillLetterTilesFromBag'");
+    public void mGetGameMode(boolean isHost) {
+        mIsHost=isHost; //check, problematic
+    }
+    
+    @Override
+    public byte[][] getBonusBoard() {
+        return board.getBonus();
+    }
+    
+    @Override
+    public char[][] getBoardChars() { //returns a matrix with the board letters and 0's where there aren't any.
+        boardData=board.getBonus();
+        char[][] boardChars= new char[15][15];
+        Tile[][] copyBoard=board.getTiles();
+        for(int i=0; i<boardData.length; i++){
+            for(int j=0; j<boardData.length; j++){
+                if(copyBoard[i][j]!=null){
+                    boardChars[i][j]=copyBoard[i][j].getLetter();
+                }
+                else{
+                    boardChars[i][j]='0';
+                }
+            }
+        }
+        return boardChars;
+    }
+    
+    @Override
+    public byte mGetDl() {
+        return board.dl;
+    }
+    @Override
+    public byte mGetDw() {
+        return board.dw;
+    }
+    @Override
+    public byte mGetTl() {
+        return board.tl;
+    }
+    @Override
+    public byte mGetTw() {
+        return board.tw;
+    }
+    
+    @Override
+    public void mLeftRightClicked() {
+        isVertical=false;
+    }
+    @Override
+    public void mDownClicked() {
+        isVertical=true;
+    }
+    
+    @Override
+    public boolean getValidWord() {
+        return mValidWord;
+    }
+    
+    @Override
+    public int getScore() {
+        return mScore;
+    }
+
+    @Override
+    public String getMStrLetterTiles() {
+        return mStrLetterTiles;
     }
     
 }

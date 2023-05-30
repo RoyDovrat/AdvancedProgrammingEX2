@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 public class Board {
 	// indexes
-	public final static byte dl=2;	// double letter
-	public final static byte tl=3;	// triple letter
-	public final static byte dw=20;	// double word
-	public final static byte tw=30;	// triple word
+	public final byte dl=2;	// double letter
+	public final byte tl=3;	// triple letter
+	public final byte dw=20;	// double word
+	public final byte tw=30;	// triple word
 	
 	private byte[][] bonus= {
 			{tw,0,0,dl,0,0,0,tw,0,0,0,dl,0,0,tw},

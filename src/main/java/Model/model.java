@@ -1,5 +1,4 @@
 package Model;
-
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -42,7 +41,6 @@ public class model extends Observable implements interfaceModel{
     ArrayList<String> players = new ArrayList<String>();
     modelGuest guest;
 
-   
     public void initServerForGuest(int port){
         int numOfPlayers=2;
         host=new MyServer(port, new modelClientHandler(numOfPlayers, this), 4);
@@ -53,22 +51,22 @@ public class model extends Observable implements interfaceModel{
         mPlayerName=Name;
         players.add(mPlayerName);
         System.out.println("name in model: "+mPlayerName);
-        setGuest();
+        //setGuest();
     }
-
+/* 
     public void setGuest(){
         guest= new modelGuest(mPlayerName);
         initServerForGuest(5000);
         guest.createConnection(5000);
 
     }
-    
+   */ 
     public void setBoardData(byte[][] bonusMatrix) {
         this.boardData = bonusMatrix;
         //redraw();
     }
      
-    public char[] restartLetterTiles(){ //move to model
+    public char[] restartLetterTiles(){ //move to modelHost
         char[] mCharLetterTiles=new char[7];
         for (int i = 0; i < letterTiles.length; i++) {
             letterTiles[i] = null;
@@ -82,7 +80,7 @@ public class model extends Observable implements interfaceModel{
         return mCharLetterTiles;
     }
     
-    public char[] fillLetterTilesFromBag(){
+    public char[] fillLetterTilesFromBag(){ ////move to modelHost
         char[] mCharLetterTiles=new char[7];
         for (int i = 0; i < letterTiles.length; i++) {
             if (letterTiles[i]==null){
@@ -116,7 +114,7 @@ public class model extends Observable implements interfaceModel{
         return board.tw;
     }
     
-    public char[][] getBoardChars(){
+    public char[][] getBoardChars(){ //returns a matrix with the board letters and 0's where there aren't any.
         boardData=board.getBonus();
         char[][] boardChars= new char[15][15];
         Tile[][] copyBoard=board.getTiles();
@@ -133,7 +131,7 @@ public class model extends Observable implements interfaceModel{
         return boardChars;
     }
 
-    public void removeTilesFromLetterTiles(Word w){
+    public void removeTilesFromLetterTiles(Word w){//remove tiles after they are used, move to hostModel
         Tile[] ts = w.getTiles();
 		for(int i=0;i<ts.length;i++) {
 			if(ts[i]!=null){
@@ -150,7 +148,7 @@ public class model extends Observable implements interfaceModel{
 		}
     }
     
-    public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
+    public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) { //gets word and location and checks it, move to modelHost
         boolean ok=true;
 		Random r=new Random();
 		int port=6000+r.nextInt(1000);
@@ -188,48 +186,36 @@ public class model extends Observable implements interfaceModel{
         return getBoardChars();
     }
     
-    public void mLeftRightClicked(){
+    public void mLeftRightClicked(){ // in binterface
         isVertical=false;
     }
     
-    public void mDownClicked(){
+    public void mDownClicked(){//in interface
         isVertical=true;
     }
     
-    public boolean validateWordInput(String wordInput) {
-        // Create a copy of the Tile array to track tile usage
+    public boolean validateWordInput(String wordInput) { //check if letters of word is in tiles, move to hostModel
         Tile[] tilesCopy = Arrays.copyOf(letterTiles, letterTiles.length);
-        // Convert the wordInput string to a character array
         char[] chars = wordInput.toCharArray();
-        // Iterate over each character in the wordInput
         for (char c : chars) {
             boolean found = false;
     
             // Search for a matching character in the tilesCopy array
             for (int i = 0; i < tilesCopy.length; i++) {
-                if (tilesCopy[i] != null && tilesCopy[i].getLetter() == c) {
-                    // Character found in the tilesCopy array
+                if (tilesCopy[i] != null && tilesCopy[i].getLetter() == c) { // Character found in the tilesCopy array
                     found = true;
-
-                    // Mark the tile as used by setting its value to null
-                    tilesCopy[i] = null;
-    
-                    // Break out of the inner loop since we found a match
+                    tilesCopy[i] = null; // Mark the tile as used by setting its value to null
                     break;
                 }
             }
-    
-            // If no matching character is found in the tilesCopy array, return false
             if (!found) {
-                return false;
+                return false;// If no matching character is found in the tilesCopy array, return false
             }
         }
-    
-        // All characters in wordInput have been matched with tiles
         return true;
     }
 
-    public Tile[] wordInputToTiles(String wordInput){
+    public Tile[] wordInputToTiles(String wordInput){ //convert string "wordInput" to tiles array, move to hostModel
         char[] charArray = wordInput.toCharArray();
         Tile[] wordTiles= new Tile[charArray.length];
         
@@ -249,7 +235,7 @@ public class model extends Observable implements interfaceModel{
         return wordTiles;
     }
     
-    public boolean getValidWord() {
+    public boolean getValidWord() {  //returns if the word is valid or not, in interface
         return mValidWord;
     }
     
@@ -279,5 +265,4 @@ public class model extends Observable implements interfaceModel{
         //setPlayerName();
         
     }
-        
 }
