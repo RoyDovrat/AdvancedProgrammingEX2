@@ -1,9 +1,11 @@
 package Model;
 
-public interface interfaceModel {
+import javafx.beans.Observable;
+
+public interface interfaceModel extends Observable  {
     //player info:
     public void setPlayerName(String Name);
-    public void mGetGameMode(boolean isHost); 
+    //public void mGetGameMode(boolean isHost); 
 
     // for printing board: 
     public byte[][] getBonusBoard();
@@ -17,11 +19,14 @@ public interface interfaceModel {
     public void mLeftRightClicked();
     public void mDownClicked();
 
+    //for submitting word:
+    public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol);
+    public char[] mRequestFillLetterTiles();
+    public char[] mRequestRestartLetterTiles();
+
     //displaying player data on board
     public boolean getValidWord();
     public int getScore();
-    public String getMStrLetterTiles();
-
-    
+    public String getMStrLetterTiles(); 
     
 }

@@ -36,9 +36,7 @@ public class BoardDisplayer implements Observer {
     view_model vm;  
     int cCol, cRow;
     char[] vLetterTiles;
-    
-    private int column = 0, line=0, tile=0;
-    boolean vertical, submitFlag=false;
+    boolean vertical, submitFlag=false, isHost;
     public int mouseRow;
     public int mouseCol;
 
@@ -78,11 +76,24 @@ public class BoardDisplayer implements Observer {
     Label score, NoNameError;
     @FXML 
     TextField PlayerName;
+    @FXML
+    MenuButton GameMode;
 
     public BoardDisplayer(){
         //wallFileName=new SimpleStringProperty();
         cCol=0;
         cRow=1;
+    }
+
+    @FXML
+    public void HostChosen(){
+        GameMode.setText("Host Mode");
+        isHost=true;
+    }
+    @FXML
+    public void GuestChosen(){
+        GameMode.setText("Guest Mode");
+        isHost=false;
     }
     
     public void setViewModel(view_model vm) {
@@ -126,10 +137,10 @@ public class BoardDisplayer implements Observer {
         score.setVisible(true);
         if (PlayerName!=null){
             vm.vmSetPlayerName();
-            sendGameMode(gameEntryController.isHost);
-            vm.vmInitGame();
+            //sendGameMode(gameEntryController.isHost);
+            
             redraw();
-            vLetterTiles=vm.vmRestartLetterTiles();
+            vLetterTiles=vm.vmRequestRestartLetterTiles();
             drawLetterTiles(vLetterTiles);
             shutStartButton();
         }
@@ -139,11 +150,6 @@ public class BoardDisplayer implements Observer {
 
     }
     
-    public void sendGameMode(boolean isHost){
-        
-        vm.vmSendGameMode(isHost);
-        
-    }
     public void drawLetterTiles(char[] letterTiles) {
         Double W = LetterTilesCanvas.getWidth();
         Double H = LetterTilesCanvas.getHeight();
@@ -176,19 +182,13 @@ public class BoardDisplayer implements Observer {
         System.out.println("word input in view: "+vWordInput.getText());
         boardChars=vm.vmSubmitWord(mouseRow,mouseCol); 
         for(int i=0; i<boardChars[0].length; i++){
-            for(int j=0; j<boardChars.length; j++){
-                
-            }
-            
+            for(int j=0; j<boardChars.length; j++){   
+            }   
         }
-        
         submitFlag=true;
-        drawLetterTiles(vm.vmFillLetterTiles());
+        drawLetterTiles(vm.vmRequestFillLetterTiles());
         redraw();
-        vWordInput.setText("");
-        //if(validWord==true){
-
-        //} 
+        vWordInput.setText(""); 
     }
     @FXML
     public void LeftRightClicked(){
@@ -233,9 +233,6 @@ public class BoardDisplayer implements Observer {
         }
     }
 
-    public void createImage(){
-        
-    }
     public void initialize() {
         vWordInput.setVisible(false);
         validWord.setVisible(false);
@@ -250,8 +247,7 @@ public class BoardDisplayer implements Observer {
         boardData=vm.getBonus();
         Text tempText = new Text();
         tempText.setFont(Font.getDefault());
-        
-        
+             
         if(boardData!=null){
             Double W= myCanvas.getWidth();
             Double H= myCanvas.getHeight();
@@ -365,7 +361,6 @@ public class BoardDisplayer implements Observer {
         if (o==vm){
             redraw();
         }
-        // throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
     
 }

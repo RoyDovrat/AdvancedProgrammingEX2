@@ -7,12 +7,15 @@ import java.util.Arrays;
 import java.util.Observable;
 import java.util.Scanner;
 
+import Server.DictionaryManager;
+import javafx.beans.InvalidationListener;
+
 public class modelHost extends Observable implements interfaceModel {
     PrintWriter out;
     Scanner in;
-    String mPlayerName, mStrLetterTiles, line = "";
+    String mPlayerName, mStrLetterTiles, line = "", mWordInput;
     Socket server;
-    boolean flag=false, mIsHost=true, isVertical=false, mValidWord;
+    boolean flag=false, mIsHost=true, isVertical=false, mValidWord, wordSentFlag;
     Board board=new Board();
     byte[][] boardData;
     int mScore;
@@ -142,15 +145,50 @@ public class modelHost extends Observable implements interfaceModel {
         return true;
     }
     
+    public char[][] checkWord(String wordInput, int mouseRow, int mouseCol) { //gets word and location and checks it, move to modelHost
+        /* 
+        boolean ok=true;
+		Random r=new Random();
+		int port=6000+r.nextInt(1000);
+		MyServer s=new MyServer(port, new ClientHandler1(),3);
+        s.start();
+        */
+        mWordInput=wordInput;
+        DictionaryManager dm=DictionaryManager.get();
+		
+		boolean ans = dm.query("./searchFiles/alice_in_wonderland.txt",
+        /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
+        
+        //mValidWord=validateWordInput(wordInput);
+        System.out.println("in file query? "+ans);
+        if (ans==true){
+            ans=dm.challenge("./searchFiles/alice_in_wonderland.txt",
+            /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
+        }
+        System.out.println("in file challange? "+ans);
+        wordSentFlag=true;
+        Tile[] tiles=wordInputToTiles(wordInput);
+        Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
+        System.out.println("newWord.toString()");
+        if(board.boardLegal(newWord) && validateWordInput(wordInput)){
+            //guest.line=wordInput;
+            //guest.flag=true;
+            mScore= board.tryPlaceWord(newWord);
+            mValidWord=true;
+            removeTilesFromLetterTiles(newWord);
+            fillLetterTilesFromBag();
+            //guest.line="over";
+        }
+        
+        setChanged();
+        notifyObservers();
+        return getBoardChars();
+    }
+    
     @Override
     public void setPlayerName(String Name) { //send name to host
         mPlayerName=Name;
         System.out.println("name in model: "+mPlayerName);
-    }
-
-    @Override
-    public void mGetGameMode(boolean isHost) {
-        mIsHost=isHost; //check, problematic
     }
     
     @Override
@@ -215,6 +253,34 @@ public class modelHost extends Observable implements interfaceModel {
     @Override
     public String getMStrLetterTiles() {
         return mStrLetterTiles;
+    }
+
+    @Override
+    public void addListener(InvalidationListener arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addListener'");
+    }
+
+    @Override
+    public void removeListener(InvalidationListener arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeListener'");
+    }
+
+    @Override
+    public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
+        char[][] result= checkWord(mWordInput, mScore, mScore);
+        return result;
+    }
+
+    @Override
+    public char[] mRequestFillLetterTiles() {
+        return fillLetterTilesFromBag();
+    }
+
+    @Override
+    public char[] mRequestRestartLetterTiles() {
+        return restartLetterTiles();
     }
 
 }

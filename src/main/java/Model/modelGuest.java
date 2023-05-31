@@ -7,9 +7,9 @@ import java.util.Observable;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import javafx.beans.InvalidationListener;
 
-
-public class modelGuest extends Observable implements interfaceModel {
+public class modelGuest implements interfaceModel {
     PrintWriter out;
     Scanner in;
     String mPlayerName, line = "", mStrLetterTiles;
@@ -75,10 +75,6 @@ public class modelGuest extends Observable implements interfaceModel {
         System.out.println("name in model: "+mPlayerName);
     }
 
-    @Override
-    public void mGetGameMode(boolean isHost) {
-        mIsHost=isHost; //check, problematic
-    }
     
     @Override
     public byte[][] getBonusBoard() {
@@ -143,5 +139,42 @@ public class modelGuest extends Observable implements interfaceModel {
     public String getMStrLetterTiles() {
         return mStrLetterTiles;
     }
+
+
+    @Override
+    public void addListener(InvalidationListener arg0) {
+        // TODO Auto-generated method stub
+        //throw new UnsupportedOperationException("Unimplemented method 'addListener'");
+    }
+
+
+    @Override
+    public void removeListener(InvalidationListener arg0) {
+        // TODO Auto-generated method stub
+        //throw new UnsupportedOperationException("Unimplemented method 'removeListener'");
+    }
+
+
+    @Override
+    public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
+        //call checking word
+        char[][] result= new char[15][15]; //return null
+        return result;
+    }
+
+
+    @Override
+    public char[] mRequestFillLetterTiles() {
+        char[] res= new char[7];
+        return res; //change!!!!!!!!
+    }
+
+
+    @Override
+    public char[] mRequestRestartLetterTiles() {
+        char[] res= new char[7];
+        return res; //change!!!!!!!!
+    }
+
     
 }

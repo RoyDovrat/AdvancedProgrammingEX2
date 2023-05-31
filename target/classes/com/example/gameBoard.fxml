@@ -16,6 +16,12 @@
       <VBox prefHeight="467.0" prefWidth="109.0" BorderPane.alignment="CENTER">
          <children>
             <TextField fx:id="PlayerName" promptText="Enter Name" />
+            <MenuButton fx:id="GameMode" mnemonicParsing="false" text="Game Mode">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#HostChosen" text="Host Mode" />
+                <MenuItem mnemonicParsing="false" onAction="#GuestChosen" text="Guest Mode" />
+              </items>
+            </MenuButton>
             <Button fx:id="startGameButton" mnemonicParsing="false" onAction="#setNewGameBoard" text="Start new game">
                <contextMenu>
                   <ContextMenu>

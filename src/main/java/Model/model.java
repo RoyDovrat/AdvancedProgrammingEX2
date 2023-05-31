@@ -19,9 +19,10 @@ import java.util.concurrent.CountDownLatch;
 import Server.ClientHandler;
 import Server.DictionaryManager;
 import Server.MyServer;
+import javafx.beans.InvalidationListener;
 import Server.MainTrain.ClientHandler1;
 
-public class model extends Observable implements interfaceModel{
+public class model extends Observable {
     byte[][] boardData;
     Board board=new Board();
     boolean mValidWord;
@@ -149,11 +150,13 @@ public class model extends Observable implements interfaceModel{
     }
     
     public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) { //gets word and location and checks it, move to modelHost
+        /* 
         boolean ok=true;
 		Random r=new Random();
 		int port=6000+r.nextInt(1000);
 		MyServer s=new MyServer(port, new ClientHandler1(),3);
         s.start();
+        */
         mWordInput=wordInput;
         DictionaryManager dm=DictionaryManager.get();
 		
@@ -172,13 +175,13 @@ public class model extends Observable implements interfaceModel{
         Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
         System.out.println("newWord.toString()");
         if(board.boardLegal(newWord) && validateWordInput(wordInput)){
-            guest.line=wordInput;
-            guest.flag=true;
+            //guest.line=wordInput;
+            //guest.flag=true;
             mScore= board.tryPlaceWord(newWord);
             mValidWord=true;
             removeTilesFromLetterTiles(newWord);
             fillLetterTilesFromBag();
-            guest.line="over";
+            //guest.line="over";
         }
         
         setChanged();
@@ -247,22 +250,10 @@ public class model extends Observable implements interfaceModel{
         return mStrLetterTiles;
     }
 
-    public void mGetGameMode(boolean isHost) {
-        /* 
-        mIsHost=isHost;
-        if (isHost){
-            model host = new model(5000);
-        }
-        else{
-            Client client = new Client("127.0.0.1", 5000);
-        }
-        */
-        //boolean ok=testServer();
-        //System.out.println("Server is working? "+ok);
-    }
-
     public void mInitGame() {
         //setPlayerName();
         
     }
+
+    
 }

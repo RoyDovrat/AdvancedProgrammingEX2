@@ -7,14 +7,14 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.gameEntryController">
    <center>
-      <Button mnemonicParsing="false" onAction="#switchToMainWindow" text="Start Game" BorderPane.alignment="CENTER" />
+      <Button mnemonicParsing="false" onAction="#switchToMainWindow" text="Start Game" BorderPane.alignment="CENTER">
+         <graphic>
+            <MenuButton fx:id="GameMode" mnemonicParsing="false" text="Game Mode">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#HostChosen" text="Host Mode" />
+                <MenuItem mnemonicParsing="false" onAction="#GuestChosen" text="Guest Mode" />
+              </items>
+            </MenuButton>
+         </graphic></Button>
    </center>
-   <top>
-      <MenuButton fx:id="GameMode" mnemonicParsing="false" text="Game Mode" BorderPane.alignment="CENTER">
-        <items>
-          <MenuItem mnemonicParsing="false" onAction="#HostChosen" text="Host Mode" />
-          <MenuItem mnemonicParsing="false" onAction="#PlayerChosen" text="Player Mode" />
-        </items>
-      </MenuButton>
-   </top>
 </BorderPane>
