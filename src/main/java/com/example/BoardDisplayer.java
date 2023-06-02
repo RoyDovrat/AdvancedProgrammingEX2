@@ -78,13 +78,18 @@ public class BoardDisplayer implements Observer {
     TextField PlayerName;
     @FXML
     MenuButton GameMode;
-
+/* 
     public BoardDisplayer(){
-        //wallFileName=new SimpleStringProperty();
         cCol=0;
         cRow=1;
     }
-
+*/
+    public BoardDisplayer(/*boolean is_host*/){
+        cCol=0;
+        cRow=1;
+        //this.isHost = is_host;
+        //System.out.println("is Host" + is_host);
+    }
     @FXML
     public void HostChosen(){
         GameMode.setText("Host Mode");

@@ -16,7 +16,7 @@ import javafx.stage.FileChooser;
 public class MainWindowController {   // implements Initializable  { //
 //Board board = new Board();
 
-    BoardDisplayer gameBoard= new BoardDisplayer();
+    BoardDisplayer gameBoard= new BoardDisplayer(/*App.isHost*/);
 
 //byte[][] bonusMatrix = board.getBonus();
    

@@ -3,6 +3,7 @@ package Model;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
 import java.util.Scanner;
@@ -21,6 +22,8 @@ public class modelHost extends Observable implements interfaceModel {
     int mScore;
     Tile[] letterTiles = new Tile[7];
     Tile.Bag bag = new Tile.Bag();
+    ArrayList<String> players = new ArrayList<String>();
+    
 
     /* 
     public modelHost(String name){
@@ -269,7 +272,8 @@ public class modelHost extends Observable implements interfaceModel {
 
     @Override
     public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
-        char[][] result= checkWord(mWordInput, mScore, mScore);
+        System.out.println("in model "+wordInput);
+        char[][] result= checkWord(wordInput, mScore, mScore);
         return result;
     }
 

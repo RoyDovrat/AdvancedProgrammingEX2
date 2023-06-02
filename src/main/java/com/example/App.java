@@ -1,4 +1,5 @@
 package com.example;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +11,7 @@ import Model.model;
 import ViewModel.view_model;
 
 public class App extends Application {
-
+    public static boolean isHost;
     private static Scene scene;
     
     @Override
@@ -19,7 +20,7 @@ public class App extends Application {
         stage.setScene(scene);
         stage.show(); 
     }
-   
+
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
@@ -27,6 +28,9 @@ public class App extends Application {
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
+    }
+    static void setIsHost(boolean bool) throws IOException {
+        isHost = bool;
     }
 
     public static void main(String[] args) {

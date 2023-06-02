@@ -3,78 +3,30 @@ package Model;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Observable;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
+import Server.DictionaryManager;
 import javafx.beans.InvalidationListener;
 
-public class modelGuest implements interfaceModel {
+public class modelGuest extends Observable implements interfaceModel {
     PrintWriter out;
     Scanner in;
-    String mPlayerName, line = "", mStrLetterTiles;
+    String mPlayerName, mStrLetterTiles, line = "", mWordInput;
     Socket server;
-    boolean flag=false, mIsHost=false, isVertical=false, mValidWord;
+    boolean flag=false, mIsHost=true, isVertical=false, mValidWord, wordSentFlag;
     Board board=new Board();
     byte[][] boardData;
     int mScore;
+    Tile[] letterTiles = new Tile[7];
+    Tile.Bag bag = new Tile.Bag();
 
-    /* 
-    public modelGuest(String name){
-        this.playerName=name;
-    }
-    public void createConnection(int port){
-        try {
-            port=5000;
-			server=new Socket("localhost",port);
-			out=new PrintWriter(server.getOutputStream());
-			in=new Scanner(server.getInputStream());
-
-            
-			out.println(playerName);
-			out.flush();
-			String res=in.nextLine(); //get server-welcome
-            System.out.println("model guest input"+ res);
-			//in.close();
-			//out.close();
-			//server.close();
-            
-            System.out.println("in model guest line1 "+line);
-		} catch (IOException e) {
-			System.out.println("your code ran into an IOException (-10)");
-		}
-         
- 
-         // keep reading until "Over" is input
-         Runnable r= ()->{
-            while (!line.equals("over")) {
-                System.out.println("1");
-                //out.writeUTF(line);
-            }
-        };
-        new Thread(r).start();
-
-    
-        System.out.println("in model guest line "+line);
-            
-        //}
-        try {
-            in.close();
-            out.close();
-            server.close();
-        }
-        catch (IOException i) {
-            System.out.println(i);
-        }
-    }
-    */
-    
     @Override
     public void setPlayerName(String Name) { //send name to host
         mPlayerName=Name;
         System.out.println("name in model: "+mPlayerName);
     }
-
     
     @Override
     public byte[][] getBonusBoard() {
@@ -140,41 +92,35 @@ public class modelGuest implements interfaceModel {
         return mStrLetterTiles;
     }
 
-
     @Override
     public void addListener(InvalidationListener arg0) {
         // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'addListener'");
+        throw new UnsupportedOperationException("Unimplemented method 'addListener'");
     }
-
 
     @Override
     public void removeListener(InvalidationListener arg0) {
         // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'removeListener'");
+        throw new UnsupportedOperationException("Unimplemented method 'removeListener'");
     }
-
 
     @Override
     public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
-        //call checking word
-        char[][] result= new char[15][15]; //return null
+        System.out.println("in model "+wordInput);
+        char[][] result= new char[15][15];
         return result;
     }
-
 
     @Override
     public char[] mRequestFillLetterTiles() {
         char[] res= new char[7];
-        return res; //change!!!!!!!!
+        return res;
     }
-
 
     @Override
     public char[] mRequestRestartLetterTiles() {
         char[] res= new char[7];
-        return res; //change!!!!!!!!
+        return res;
     }
 
-    
 }

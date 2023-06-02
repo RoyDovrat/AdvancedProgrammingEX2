@@ -11,10 +11,6 @@
 <BorderPane prefHeight="606.0" prefWidth="699.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.MainWindowController">
    <left>
       <VBox prefHeight="404.0" prefWidth="47.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button mnemonicParsing="false" onAction="#startGame" prefHeight="25.0" prefWidth="82.0" text="Start Game" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="stop" />
-         </children>
       </VBox>
    </left>
    <bottom>

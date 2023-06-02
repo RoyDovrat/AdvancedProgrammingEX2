@@ -11,7 +11,6 @@
 <BorderPane prefHeight="606.0" prefWidth="699.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.MainWindowController">
    <left>
       <VBox prefHeight="404.0" prefWidth="47.0" BorderPane.alignment="CENTER">
-         
       </VBox>
    </left>
    <bottom>

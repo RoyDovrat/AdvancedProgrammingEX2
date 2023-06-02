@@ -39,6 +39,7 @@ public class view_model extends Observable implements Observer{
     }
 
     public char[][] vmSubmitWord(int mouseRow, int mouseCol){
+        System.out.println("in viewmodel "+wordInput.get());
         return m.mSubmitWord(wordInput.get(), mouseRow, mouseCol);
     }
 

@@ -40,7 +40,7 @@ public class model extends Observable {
     private DataInputStream in       =  null;
     MyServer host;
     ArrayList<String> players = new ArrayList<String>();
-    modelGuest guest;
+    //modelGuest2 guest;
 
     public void initServerForGuest(int port){
         int numOfPlayers=2;

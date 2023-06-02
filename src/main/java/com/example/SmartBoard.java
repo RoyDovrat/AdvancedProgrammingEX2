@@ -16,24 +16,24 @@ import javafx.scene.layout.AnchorPane;
 public class SmartBoard extends AnchorPane {
     BoardDisplayer board;
     interfaceModel m;
-    gameEntryController entry= new gameEntryController();
+    
     public SmartBoard(){
         super();
         try {
+            gameEntryController entry= new gameEntryController();
             board = new BoardDisplayer();
-            System.out.println("isHost on smart:"+ entry.isHost);
-            if(entry.isHost==true){
+            view_model vm;
+            if(App.isHost){
                 m= new modelHost();
-                System.out.println("yes host");
+                System.out.println("is host in smart");
             }
             else{
                 m= new modelGuest();
-                System.out.println("not host");
+                System.out.println("is host in smart");
             }
             
-            //model m = new model();
             //m= new modelHost();
-            view_model vm = new view_model(m); // View-Model
+            vm = new view_model(m); // View-Model
 
             vm.addObserver(board);
             
