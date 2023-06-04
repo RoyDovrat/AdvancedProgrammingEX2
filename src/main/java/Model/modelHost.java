@@ -198,29 +198,29 @@ public class modelHost extends Observable implements interfaceModel {
     public char[][] checkWord(String wordInput, int mouseRow, int mouseCol) { //gets word and location and checks it, move to modelHost
 
         mWordInput=wordInput;
-        DictionaryManager dm=DictionaryManager.get();
+        //DictionaryManager dm=DictionaryManager.get();
 		
-		boolean ans = dm.query("./searchFiles/alice_in_wonderland.txt",
-        /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
+		//boolean ans = dm.query("./searchFiles/alice_in_wonderland.txt",
+        /* "./searchFiles/Frank Herbert - Dune.txt",*///wordInput);
         
         //mValidWord=validateWordInput(wordInput);
-        System.out.println("in file query? "+ans);
-        if (ans==true){
-            ans=dm.challenge("./searchFiles/alice_in_wonderland.txt",
-            /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
-        }
-        System.out.println("in file challange? "+ans);
+        //System.out.println("in file query? "+ans);
+        //if (ans==true){
+        //    ans=dm.challenge("./searchFiles/alice_in_wonderland.txt",
+            /* "./searchFiles/Frank Herbert - Dune.txt",*///wordInput);
+        //}
+        //System.out.println("in file challange? "+ans);
         wordSentFlag=true;
         Tile[] tiles=wordInputToTiles(wordInput);
         Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
-        System.out.println("newWord.toString()");
+        System.out.println(newWord.toString());
         if(board.boardLegal(newWord) && validateWordInput(wordInput)){
             //guest.line=wordInput;
             //guest.flag=true;
             mScore= board.tryPlaceWord(newWord);
-            mValidWord=true;
-            removeTilesFromLetterTiles(newWord);
-            fillLetterTilesFromBag();
+            //mValidWord=true;
+            //removeTilesFromLetterTiles(newWord);
+            //fillLetterTilesFromBag();
             //guest.line="over";
         }
         
@@ -315,6 +315,12 @@ public class modelHost extends Observable implements interfaceModel {
     public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
         System.out.println("in model "+wordInput);
         char[][] result= checkWord(wordInput, mouseRow, mouseCol);
+        for(int i=0; i<15; i++){
+            for(int j=0; j<15; j++){
+                System.out.print(result[i][j]);
+            }
+            System.out.println("");
+        }
         return result;
     }
 

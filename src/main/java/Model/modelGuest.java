@@ -32,7 +32,6 @@ public class modelGuest extends Observable implements interfaceModel {
 			in=new Scanner(server.getInputStream());
             
             Thread t= new Thread(new Runnable() {
-
                 @Override
                 public void run() {
                     while(true){
