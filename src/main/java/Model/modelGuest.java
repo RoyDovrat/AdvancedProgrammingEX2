@@ -185,12 +185,10 @@ public class modelGuest extends Observable implements interfaceModel {
 
     @Override
     public char[] mRequestFillLetterTiles() {
-        String str = strTiles;
-        if(tilesSentFlag){
-            return str.toCharArray();
-        }
-        char[] res= new char[7];
-        return res;
+        out.println("FillTiles");
+        out.flush();
+        strTiles= getResponseFromHost();
+        return strTiles.toCharArray();
     }
 
     @Override

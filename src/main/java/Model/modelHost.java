@@ -115,15 +115,13 @@ public class modelHost extends Observable implements interfaceModel {
         } 
         fillLetterTilesFromBag();
         for (int i = 0; i < letterTiles.length; i++) { //for debug
-            //System.out.println(letterTiles[i].tileToString(letterTiles[i]));
             mCharLetterTiles[i]=letterTiles[i].getLetter();  
         }
         mStrLetterTiles = new String(mCharLetterTiles);
-        
         return mStrLetterTiles;
     }
 
-    public char[] fillLetterTilesFromBag(){ 
+    public String fillLetterTilesFromBag(){ 
         char[] mCharLetterTiles=new char[7];
         for (int i = 0; i < letterTiles.length; i++) {
             if (letterTiles[i]==null){
@@ -131,17 +129,16 @@ public class modelHost extends Observable implements interfaceModel {
             }
         } 
         for (int i = 0; i < letterTiles.length; i++) { //for debug
-            //System.out.println(letterTiles[i].tileToString(letterTiles[i]));
             mCharLetterTiles[i]=letterTiles[i].getLetter();  
         }
-        return mCharLetterTiles;
+        mStrLetterTiles = new String(mCharLetterTiles);
+        return mStrLetterTiles;
     }
     
     public void removeTilesFromLetterTiles(Word w){//remove tiles after they are used
         Tile[] ts = w.getTiles();
 		for(int i=0;i<ts.length;i++) {
 			if(ts[i]!=null){
-                //System.out.println("here");
                 for(int j=0; j<letterTiles.length; j++){
                     if(letterTiles[j]!=null){
                         if ((ts[i].getLetter()==letterTiles[j].getLetter())){ 
@@ -219,7 +216,7 @@ public class modelHost extends Observable implements interfaceModel {
             //guest.flag=true;
             mScore= board.tryPlaceWord(newWord);
             //mValidWord=true;
-            //removeTilesFromLetterTiles(newWord);
+            removeTilesFromLetterTiles(newWord);
             //fillLetterTilesFromBag();
             //guest.line="over";
         }
@@ -326,7 +323,7 @@ public class modelHost extends Observable implements interfaceModel {
 
     @Override
     public char[] mRequestFillLetterTiles() {
-        return fillLetterTilesFromBag();
+        return fillLetterTilesFromBag().toCharArray();
     }
 
     @Override

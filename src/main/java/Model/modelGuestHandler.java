@@ -57,6 +57,10 @@ public class modelGuestHandler implements ClientHandler {
                 //setResponse(str);
                 out.println(str);
             }
+            if (args[0].equals("FillTiles")){
+                String str = host.fillLetterTilesFromBag(); 
+                out.println(str);
+            }
 
             out.flush();
         }  
