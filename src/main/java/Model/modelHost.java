@@ -2,12 +2,20 @@ package Model;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Observable;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+
+import Server.ClientHandler;
 import Server.DictionaryManager;
 import javafx.beans.InvalidationListener;
 
@@ -23,46 +31,84 @@ public class modelHost extends Observable implements interfaceModel {
     Tile[] letterTiles = new Tile[7];
     Tile.Bag bag = new Tile.Bag();
     ArrayList<String> players = new ArrayList<String>();
+
+    int port;
+    boolean stop;
+    ClientHandler ch;
+    int MaxThreads;
+    ExecutorService executor;
+    Set<Socket> sockets;
+
+    public modelHost (int port, modelGuestHandler ch, int MaxThreads) {
+        this.port=port;
+        this.ch=ch;
+        ch.setHost(this);
+        this.MaxThreads=MaxThreads;
+        this.executor=Executors.newFixedThreadPool(MaxThreads);
+        this.sockets = new HashSet<>();
+    }
     
+    @Override
+    public void start()  {
+        stop= false;
 
-    /* 
-    public modelHost(String name){
-        this.playerName=name;
+        new Thread(() -> {
+			try {
+				startServer(ch);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}).start();
     }
-    */
-    /* 
-    public void createConnection(int port){
+    
+    private void startServer(ClientHandler chNew) throws IOException{
         try {
-            port=5000;
-			server=new Socket("localhost",port);
-			out=new PrintWriter(server.getOutputStream());
-			in=new Scanner(server.getInputStream());
-
-            
-			out.println(playerName);
-			out.flush();
-			String res=in.nextLine(); //get server-welcome
-            System.out.println("model host input"+ res);
-			//in.close();
-			//out.close();
-			//server.close();
-		} catch (IOException e) {
-			System.out.println("your code ran into an IOException (-10)");
-		}
-         
-        
-        try {
-            in.close();
-            out.close();
+            ServerSocket server = new ServerSocket(port);
+            server.setSoTimeout(1000);
+            while(!stop) {
+                try {
+                    Socket client=server.accept();
+                    sockets.add(client);
+                    executor.execute(() -> 
+                        {
+                            try {
+                            	 Class<? extends ClientHandler> chClass = this.ch.getClass();
+                                 try {
+									//ClientHandler chNew = chClass.getDeclaredConstructor().newInstance();
+                        
+									chNew.handleClient(client.getInputStream(), client.getOutputStream());
+									
+									client.close();
+								} catch (IllegalArgumentException| SecurityException e) {
+									e.printStackTrace();
+								}
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                } catch(SocketTimeoutException e) {}
+            }
             server.close();
-        }
-        catch (IOException i) {
-            System.out.println(i);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            executor.shutdown();
+            for (Socket socket : sockets) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-    */
 
-    public char[] restartLetterTiles(){ 
+    
+    public void hello(){
+        System.out.println("hello yanai");
+    }
+
+    public String restartLetterTiles(){ 
         char[] mCharLetterTiles=new char[7];
         for (int i = 0; i < letterTiles.length; i++) {
             letterTiles[i] = null;
@@ -73,7 +119,8 @@ public class modelHost extends Observable implements interfaceModel {
             mCharLetterTiles[i]=letterTiles[i].getLetter();  
         }
         mStrLetterTiles = new String(mCharLetterTiles);
-        return mCharLetterTiles;
+        
+        return mStrLetterTiles;
     }
 
     public char[] fillLetterTilesFromBag(){ 
@@ -149,13 +196,7 @@ public class modelHost extends Observable implements interfaceModel {
     }
     
     public char[][] checkWord(String wordInput, int mouseRow, int mouseCol) { //gets word and location and checks it, move to modelHost
-        /* 
-        boolean ok=true;
-		Random r=new Random();
-		int port=6000+r.nextInt(1000);
-		MyServer s=new MyServer(port, new ClientHandler1(),3);
-        s.start();
-        */
+
         mWordInput=wordInput;
         DictionaryManager dm=DictionaryManager.get();
 		
@@ -273,7 +314,7 @@ public class modelHost extends Observable implements interfaceModel {
     @Override
     public char[][] mSubmitWord(String wordInput, int mouseRow, int mouseCol) {
         System.out.println("in model "+wordInput);
-        char[][] result= checkWord(wordInput, mScore, mScore);
+        char[][] result= checkWord(wordInput, mouseRow, mouseCol);
         return result;
     }
 
@@ -284,7 +325,7 @@ public class modelHost extends Observable implements interfaceModel {
 
     @Override
     public char[] mRequestRestartLetterTiles() {
-        return restartLetterTiles();
+        return restartLetterTiles().toCharArray();
     }
 
 }

@@ -44,7 +44,7 @@ public class model extends Observable {
 
     public void initServerForGuest(int port){
         int numOfPlayers=2;
-        host=new MyServer(port, new modelClientHandler(numOfPlayers, this), 4);
+        //host=new MyServer(port, new modelGuestHandler(numOfPlayers, this), 4);
         host.start(); //server of Host
     }
     

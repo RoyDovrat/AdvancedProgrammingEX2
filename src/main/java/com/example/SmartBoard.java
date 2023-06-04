@@ -8,6 +8,7 @@ import java.util.Observable;
 import Model.interfaceModel;
 import Model.model;
 import Model.modelGuest;
+import Model.modelGuestHandler;
 import Model.modelHost;
 import ViewModel.view_model;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 public class SmartBoard extends AnchorPane {
     BoardDisplayer board;
     interfaceModel m;
+    //modelGuestHandler gh= new modelGuestHandler(0, null)
     
     public SmartBoard(){
         super();
@@ -24,11 +26,12 @@ public class SmartBoard extends AnchorPane {
             board = new BoardDisplayer();
             view_model vm;
             if(App.isHost){
-                m= new modelHost();
+                m= new modelHost(5000, new modelGuestHandler(), 2);
+                m.start();
                 System.out.println("is host in smart");
             }
             else{
-                m= new modelGuest();
+                m= new modelGuest(5000);
                 System.out.println("is host in smart");
             }
             

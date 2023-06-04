@@ -27,6 +27,8 @@ public interface interfaceModel extends Observable  {
     //displaying player data on board
     public boolean getValidWord();
     public int getScore();
-    public String getMStrLetterTiles(); 
+    public String getMStrLetterTiles();
+
+    public void start(); 
     
 }
