@@ -13,15 +13,10 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="567.0" prefWidth="683.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <left>
-      <VBox prefHeight="467.0" prefWidth="109.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="565.0" prefWidth="115.0" BorderPane.alignment="CENTER">
          <children>
             <TextField fx:id="PlayerName" promptText="Enter Name" />
-            <MenuButton fx:id="GameMode" mnemonicParsing="false" text="Game Mode">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#HostChosen" text="Host Mode" />
-                <MenuItem mnemonicParsing="false" onAction="#GuestChosen" text="Guest Mode" />
-              </items>
-            </MenuButton>
+            <Button fx:id="SubmitNameB" mnemonicParsing="false" onAction="#submitNameFunc" prefHeight="25.0" prefWidth="107.0" text="Submit Name" />
             <Button fx:id="startGameButton" mnemonicParsing="false" onAction="#setNewGameBoard" text="Start new game">
                <contextMenu>
                   <ContextMenu>
@@ -42,7 +37,10 @@
             <Label fx:id="RowBoard" text="Row: " />
             <Label fx:id="ColBoard" text="Col:" />
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#submitWord" text="submit word" />
-            <Label fx:id="score" text="score" />
+            <Button fx:id="SkipTurnButton" mnemonicParsing="false" onAction="#SkipTurn" prefHeight="25.0" prefWidth="82.0" text="Skip Turn" />
+            <Label fx:id="score" text="score" textAlignment="CENTER" />
+            <Label fx:id="ModeLabel" prefHeight="33.0" prefWidth="79.0" textAlignment="CENTER" />
+            <Label fx:id="NameLabel" prefHeight="17.0" prefWidth="115.0" />
          </children>
       </VBox>
    </left>

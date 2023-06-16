@@ -2,9 +2,7 @@ package com.example;
 
 //import java.sql.Time;
 import java.util.Observable;
-
 //import javax.swing.plaf.synth.SynthStyle;
-
 import Model.interfaceModel;
 import Model.model;
 import Model.modelGuest;
@@ -14,28 +12,36 @@ import ViewModel.view_model;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
+import java.util.Random;
+
 public class SmartBoard extends AnchorPane {
     BoardDisplayer board;
     interfaceModel m;
-    //modelGuestHandler gh= new modelGuestHandler(0, null)
     
     public SmartBoard(){
         super();
         try {
+            Random random = new Random();
             gameEntryController entry= new gameEntryController();
             board = new BoardDisplayer();
             view_model vm;
-            if(App.isHost){
-                m= new modelHost(5000, new modelGuestHandler(), 2);
+            System.out.println("view model vm");
+            if(App.isHost){ 
+                int port = App.port_num;
+                m= new modelHost(port, new modelGuestHandler(), 2);
                 m.start();
-                System.out.println("is host in smart");
+                System.out.println("smartBoard port number: "+port);
             }
-            else{
-                m= new modelGuest(5000);
+            else{//guest
+                int guestPort = App.port_guest;
+                System.out.println(guestPort);
+                System.out.println("guestPort is:"+ guestPort);
+                int port = guestPort;//5000;//to change
+                m= new modelGuest(port);
                 System.out.println("is host in smart");
             }
             
-            //m= new modelHost();
+            
             vm = new view_model(m); // View-Model
 
             vm.addObserver(board);

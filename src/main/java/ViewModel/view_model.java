@@ -23,9 +23,11 @@ public class view_model extends Observable implements Observer{
     public StringProperty wordInput;
     public BooleanProperty vmValidWord;
     public IntegerProperty vmScore;
+    public IntegerProperty vmPortNum;
     public StringProperty vmStrLetterTiles;
     public StringProperty vmPlayerName;
     public char[] vmLetterTiles;
+    public char[][] boardChars;
     
 
     public view_model (interfaceModel m2){
@@ -38,24 +40,37 @@ public class view_model extends Observable implements Observer{
         vmPlayerName=new SimpleStringProperty();
     }
 
-    public char[][] vmSubmitWord(int mouseRow, int mouseCol){
-        return m.mSubmitWord(wordInput.get(), mouseRow, mouseCol);
+    public char[][] vmSubmitWord(String nowPlayingName, int mouseRow, int mouseCol){
+        System.out.println("in viewmodel "+wordInput.get());
+        String getWordIn = wordInput.get();
+        return m.mSubmitWord(nowPlayingName, getWordIn, mouseRow, mouseCol);
     }
 
     public void vmLeftRightClicked(){
         m.mLeftRightClicked();
     }
-    
+    public void vmOnePlayerClicked(){
+        m.mOnePlayerClicked();
+    }
+    public void vmTwoPlayersClicked(){
+        m.mTwoPlayersClicked();
+    }
+    public void vmThreePlayersClicked(){
+        m.mThreePlayersClicked();
+    }
+    public void vmFourPlayersClicked(){
+        m.mFourPlayersClicked();
+    }
     public void vmDownClicked(){
         m.mDownClicked();
     }
   
-    public char[] vmRequestFillLetterTiles(){
-        return m.mRequestFillLetterTiles();
+    public char[] vmRequestFillLetterTiles(String nowPlayingName){
+        return m.mRequestFillLetterTiles(nowPlayingName);
     }
     
-    public char[] vmRequestRestartLetterTiles(){
-        vmLetterTiles=m.mRequestRestartLetterTiles();
+    public char[] vmRequestRestartLetterTiles(String nowPlayingName){
+        vmLetterTiles=m.mRequestRestartLetterTiles(nowPlayingName);
         return vmLetterTiles;
     }
 
@@ -83,12 +98,35 @@ public class view_model extends Observable implements Observer{
         m.setPlayerName(vmPlayerName.get());
     }
 
+    public void vmsetStart(){
+    m.msetStart();
+    }
+
+
+    public boolean vmCheckIfEnoughPlayers(){
+        return m.mCheckIfEnoughPlayers();
+    }
+
+    public void vmGetCurrentBoard(){
+        boardChars=m.getBoardChars();
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         if(o==m){ 
-            ((WritableBooleanValue) vmValidWord).set(m.getValidWord());//getScore
-            (vmScore).set(m.getScore());//getScore
+            vmGetCurrentBoard();
+            boolean isValid = m.getValidWord();
+            ((WritableBooleanValue) vmValidWord).set(isValid);//getScore
+            int score = m.getScore();
+            (vmScore).set(score);//getScore
+            setChanged();
+            notifyObservers();;
         }
     }
+
+    public void vmSkipTurn() {
+        m.mSkipTurn();
+    }
+
 
 }

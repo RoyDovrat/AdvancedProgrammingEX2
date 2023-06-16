@@ -34,17 +34,20 @@ public class BoardDisplayer implements Observer {
     byte[][] boardData; //removed to model
     char[][] boardChars=new char[15][15];
     view_model vm;  
-    int cCol, cRow;
+    int cCol, cRow, numOfPlayersChosen;
     char[] vLetterTiles;
     boolean vertical, submitFlag=false, isHost;
-    public int mouseRow;
+    public int mouseRow, port_num;
     public int mouseCol;
+    String myName;
+    
+
 
     @FXML
     String vStrLetterTiles;
     @FXML
-    Button submitButton;
-
+    Button submitButton,  SubmitNameB, SkipTurnButton;
+  
     @FXML
     TextField vWordInput;
 
@@ -71,40 +74,41 @@ public class BoardDisplayer implements Observer {
 
     @FXML
     Label ColBoard, RowBoard;
-
+    
     @FXML
     Label score, NoNameError;
     @FXML 
     TextField PlayerName;
     @FXML
     MenuButton GameMode;
-/* 
-    public BoardDisplayer(){
-        cCol=0;
-        cRow=1;
-    }
-*/
+
+
     public BoardDisplayer(/*boolean is_host*/){
         cCol=0;
         cRow=1;
-        //this.isHost = is_host;
-        //System.out.println("is Host" + is_host);
     }
+
     @FXML
     public void HostChosen(){
         GameMode.setText("Host Mode");
         isHost=true;
+
     }
     @FXML
     public void GuestChosen(){
         GameMode.setText("Guest Mode");
         isHost=false;
     }
+
+    @FXML
+    public void SkipTurn(){
+        vm.vmSkipTurn();
+    }
     
     public void setViewModel(view_model vm) {
         this.vm=vm;
         vm.wordInput.bind(vWordInput.textProperty());//הלוך
-        vm.vmPlayerName.bind(PlayerName.textProperty());
+        vm.vmPlayerName.bind(PlayerName.textProperty()); 
         validWord.textProperty().bind((vm.vmValidWord.asString()));//חזור
         //score.textProperty().bind(vm.vmScore);
         StringProperty scoreText = new SimpleStringProperty();
@@ -117,6 +121,16 @@ public class BoardDisplayer implements Observer {
         cRow=row;
         redraw();
     }
+    public void submitNameFunc(){
+        this.myName = PlayerName.getText();
+        vm.vmSetPlayerName();
+        System.out.println("submit pressed");
+        if(PlayerName==null){
+            NoNameError.setText("Enter Name");
+        }
+    }
+
+
     
     public int getcCol() {
         return cCol;
@@ -133,21 +147,26 @@ public class BoardDisplayer implements Observer {
 
     @FXML
     public void setNewGameBoard(){
-        vWordInput.setVisible(true);
-        validWord.setVisible(true);
-        TileDirection.setVisible(true);
-        RowBoard.setVisible(true);
-        ColBoard.setVisible(true);
-        submitButton.setVisible(true);
-        score.setVisible(true);
-        if (PlayerName!=null){
-            vm.vmSetPlayerName();
-            //sendGameMode(gameEntryController.isHost);
-            
+        //while(this.NumberOfPlayers)
+    
+        if (myName!=null){
+           
+            while(!vm.vmCheckIfEnoughPlayers()){
+                System.err.println("not enough players connected");
+            } 
+            vm.vmsetStart();
+            vWordInput.setVisible(true);
+            validWord.setVisible(true);
+            TileDirection.setVisible(true);
+            RowBoard.setVisible(true);
+            ColBoard.setVisible(true);
+            submitButton.setVisible(true);
+            score.setVisible(true);
             redraw();
-            vLetterTiles=vm.vmRequestRestartLetterTiles();
+            vLetterTiles=vm.vmRequestRestartLetterTiles(this.myName);
             drawLetterTiles(vLetterTiles);
             shutStartButton();
+            
         }
         else{
             NoNameError.setText("Enter Name");
@@ -185,19 +204,19 @@ public class BoardDisplayer implements Observer {
     public void submitWord(){
         
         System.out.println("word input in view: "+vWordInput.getText());
-        boardChars=vm.vmSubmitWord(mouseRow,mouseCol); 
+        boardChars=vm.vmSubmitWord(this.myName, mouseRow,mouseCol); 
         for(int i=0; i<boardChars[0].length; i++){
             for(int j=0; j<boardChars.length; j++){   
             }   
         }
         submitFlag=true;
-        drawLetterTiles(vm.vmRequestFillLetterTiles());
+        drawLetterTiles(vm.vmRequestFillLetterTiles(this.myName));
         redraw();
         vWordInput.setText(""); 
     }
     @FXML
     public void LeftRightClicked(){
-        TileDirection.setText("Horizonal");
+        TileDirection.setText("Horizontal");
         
         vm.vmLeftRightClicked(); 
     }
@@ -364,6 +383,7 @@ public class BoardDisplayer implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o==vm){
+            boardChars=vm.boardChars;
             redraw();
         }
     }

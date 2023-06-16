@@ -247,10 +247,10 @@ public class Board {
 			if(w.isVertical()) row++; else col++;
 		}		
 
-		if(isEmpty) {
-			isEmpty=false;
-			bonus[7][7]=0;
-		}
+		// if(isEmpty) {
+		// 	isEmpty=false;
+		// 	bonus[7][7]=0;
+		// }
 		return sum;
 	}
 

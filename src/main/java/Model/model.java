@@ -157,20 +157,24 @@ public class model extends Observable {
 		MyServer s=new MyServer(port, new ClientHandler1(),3);
         s.start();
         */
+
+        //query, challange, if board legal, if word in tiles
         mWordInput=wordInput;
         DictionaryManager dm=DictionaryManager.get();
-		
-		boolean ans = dm.query("./searchFiles/alice_in_wonderland.txt",
+		//check if word is in dictionary
+		boolean inDictionary = dm.query("./searchFiles/alice_in_wonderland.txt",
         /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
         
         //mValidWord=validateWordInput(wordInput);
-        System.out.println("in file query? "+ans);
-        if (ans==true){
-            ans=dm.challenge("./searchFiles/alice_in_wonderland.txt",
+        System.out.println("in file query? "+inDictionary);
+        if (inDictionary==true){
+            inDictionary=dm.challenge("./searchFiles/alice_in_wonderland.txt",
             /* "./searchFiles/Frank Herbert - Dune.txt",*/wordInput);
         }
-        System.out.println("in file challange? "+ans);
-        wordSentFlag=true;
+        System.out.println("in file challange? "+inDictionary);
+
+
+        //wordSentFlag=true;
         Tile[] tiles=wordInputToTiles(wordInput);
         Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
         System.out.println("newWord.toString()");
