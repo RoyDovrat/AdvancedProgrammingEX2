@@ -38,7 +38,6 @@ public class SmartBoard extends AnchorPane {
                 System.out.println("guestPort is:"+ guestPort);
                 int port = guestPort;//5000;//to change
                 m= new modelGuest(port);
-                System.out.println("is host in smart");
             }
             
             

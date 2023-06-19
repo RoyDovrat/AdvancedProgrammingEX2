@@ -22,12 +22,13 @@ public class view_model extends Observable implements Observer{
     
     public StringProperty wordInput;
     public BooleanProperty vmValidWord;
-    public IntegerProperty vmScore;
+    public StringProperty vmCurrentPlayer;
     public IntegerProperty vmPortNum;
     public StringProperty vmStrLetterTiles;
     public StringProperty vmPlayerName;
     public char[] vmLetterTiles;
     public char[][] boardChars;
+    int[] scores=  new int[4];
     
 
     public view_model (interfaceModel m2){
@@ -36,7 +37,7 @@ public class view_model extends Observable implements Observer{
         wordInput=new SimpleStringProperty();
         vmValidWord=new SimpleBooleanProperty();
         vmStrLetterTiles=new SimpleStringProperty();
-        vmScore=new SimpleIntegerProperty();
+        vmCurrentPlayer=new SimpleStringProperty();
         vmPlayerName=new SimpleStringProperty();
     }
 
@@ -110,22 +111,34 @@ public class view_model extends Observable implements Observer{
     public void vmGetCurrentBoard(){
         boardChars=m.getBoardChars();
     }
+    public String getPlayersName(){
+        return m.getPlayersName();
+    }
+    public int[] vmUpdateScores(){
+        return m.getScores();
+    }
+
+    public int[] getScores(){
+        return m.getScores();
+    }
 
     @Override
     public void update(Observable o, Object arg) {
         if(o==m){ 
             vmGetCurrentBoard();
+            scores=vmUpdateScores();
             boolean isValid = m.getValidWord();
             ((WritableBooleanValue) vmValidWord).set(isValid);//getScore
-            int score = m.getScore();
-            (vmScore).set(score);//getScore
-            setChanged();
+            String currentPlayer = m.getCurrentPlayer();
+            (vmCurrentPlayer).set(currentPlayer);//getScore
+            setChanged();//HERE
             notifyObservers();;
         }
     }
 
     public void vmSkipTurn() {
         m.mSkipTurn();
+        
     }
 
 

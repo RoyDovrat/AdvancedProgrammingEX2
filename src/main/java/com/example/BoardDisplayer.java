@@ -9,8 +9,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.WritableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,7 +22,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -40,8 +48,6 @@ public class BoardDisplayer implements Observer {
     public int mouseRow, port_num;
     public int mouseCol;
     String myName;
-    
-
 
     @FXML
     String vStrLetterTiles;
@@ -70,17 +76,25 @@ public class BoardDisplayer implements Observer {
     Canvas LetterTilesCanvas;
     
     @FXML
-    private Button startGameButton;
+    Button startGameButton;
 
     @FXML
     Label ColBoard, RowBoard;
     
     @FXML
-    Label score, NoNameError;
+    Label CurrentPlayer, NoNameError;
     @FXML 
     TextField PlayerName;
     @FXML
     MenuButton GameMode;
+    
+    @FXML
+    TableView<String> scoreTable;
+    @FXML
+    TableColumn<String, String> nameColumn;
+
+    ArrayList<String> playerNames= new ArrayList<String>();; // ArrayList of player names
+    ArrayList<Integer> playerScores= new ArrayList<Integer>();; // ArrayList of player scores
 
 
     public BoardDisplayer(/*boolean is_host*/){
@@ -110,10 +124,10 @@ public class BoardDisplayer implements Observer {
         vm.wordInput.bind(vWordInput.textProperty());//הלוך
         vm.vmPlayerName.bind(PlayerName.textProperty()); 
         validWord.textProperty().bind((vm.vmValidWord.asString()));//חזור
-        //score.textProperty().bind(vm.vmScore);
-        StringProperty scoreText = new SimpleStringProperty();
-        scoreText.bind(Bindings.concat("score: ", vm.vmScore.asString()));
-        score.textProperty().bind(scoreText);
+        //CurrentPlayer.textProperty().bind(vm.vmCurrentPlayer);
+        // StringProperty CurrentPlayerText = new SimpleStringProperty();
+        //CurrentPlayer.textProperty().bind(Bindings.concat("Player: ", vm.vmCurrentPlayer));
+        // CurrentPlayer.textProperty().bind(CurrentPlayerText);
     }   
   
     public void setCharacterPosition(int row, int col){
@@ -121,6 +135,7 @@ public class BoardDisplayer implements Observer {
         cRow=row;
         redraw();
     }
+    
     public void submitNameFunc(){
         this.myName = PlayerName.getText();
         vm.vmSetPlayerName();
@@ -129,8 +144,6 @@ public class BoardDisplayer implements Observer {
             NoNameError.setText("Enter Name");
         }
     }
-
-
     
     public int getcCol() {
         return cCol;
@@ -161,12 +174,15 @@ public class BoardDisplayer implements Observer {
             RowBoard.setVisible(true);
             ColBoard.setVisible(true);
             submitButton.setVisible(true);
-            score.setVisible(true);
+            CurrentPlayer.setVisible(true);
+            scoreTable.setVisible(true);
+            SubmitNameB.setVisible(false);
             redraw();
+            getPlayersName();
             vLetterTiles=vm.vmRequestRestartLetterTiles(this.myName);
             drawLetterTiles(vLetterTiles);
             shutStartButton();
-            
+            SkipTurnButton.setVisible(true);
         }
         else{
             NoNameError.setText("Enter Name");
@@ -174,6 +190,48 @@ public class BoardDisplayer implements Observer {
 
     }
     
+    public void getPlayersName(){
+        String namses= vm.getPlayersName();
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("playerName"));
+        
+        separateNames(namses);
+        
+        ObservableList<String> items = FXCollections.observableArrayList(playerNames);
+        scoreTable.setItems(items);
+        
+        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue()));
+        //scoreColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(0).asObject());
+        scoreTable.setFixedCellSize(40); // Set a fixed height for each table row
+        scoreTable.prefHeightProperty().bind(Bindings.size(scoreTable.getItems()).multiply(scoreTable.getFixedCellSize()).add(30)); // Adjust the table height based on the number of rows
+    }
+    
+    public void updatePlayerScores(int[] scores) {
+        if (scores.length == playerNames.size()) {
+            if (playerScores == null) {
+                playerScores = new ArrayList<>();
+            } else {
+                playerScores.clear();
+            }
+
+            for (int i = 0; i < scores.length; i++) {
+                playerScores.add(scores[i]);
+            }
+        }
+    }
+  
+    public void updateScores(int[] scores) {
+        ObservableList<String> items = FXCollections.observableArrayList();
+
+        for (int i = 0; i < playerNames.size(); i++) {
+            String playerName = playerNames.get(i);
+            int score = scores[i];
+            String item = playerName + "             " + score;
+            items.add(item);
+        }
+
+        scoreTable.setItems(items);
+    }
+
     public void drawLetterTiles(char[] letterTiles) {
         Double W = LetterTilesCanvas.getWidth();
         Double H = LetterTilesCanvas.getHeight();
@@ -209,6 +267,7 @@ public class BoardDisplayer implements Observer {
             for(int j=0; j<boardChars.length; j++){   
             }   
         }
+        updateScores(vm.getScores());
         submitFlag=true;
         drawLetterTiles(vm.vmRequestFillLetterTiles(this.myName));
         redraw();
@@ -257,6 +316,14 @@ public class BoardDisplayer implements Observer {
         }
     }
 
+    public void separateNames(String names) {
+        String[] nameArray = names.split(",");
+        for (String name : nameArray) {
+            String trimmedName = name.trim(); // Remove leading/trailing whitespace if needed
+            playerNames.add(trimmedName);
+        }
+    }
+
     public void initialize() {
         vWordInput.setVisible(false);
         validWord.setVisible(false);
@@ -264,7 +331,9 @@ public class BoardDisplayer implements Observer {
         RowBoard.setVisible(false);
         ColBoard.setVisible(false);
         submitButton.setVisible(false);
-        score.setVisible(false);
+        CurrentPlayer.setVisible(false);
+        SkipTurnButton.setVisible(false);
+        scoreTable.setVisible(false);
     }
 
     public void redraw(){
@@ -370,20 +439,19 @@ public class BoardDisplayer implements Observer {
                     else if(boardData[i][j]==vm.vmGetDl()){
                         DisplayImage(gc, doubleLetter, i, j, w, h);
                     }
-                    //else{
-                     //   gc.fillRect(j*w, i*h, w, h);
-                    //}
                 }
-            }
-            
+            }  
         }
-        
-    
     }
+    
     @Override
     public void update(Observable o, Object arg) {
         if (o==vm){
             boardChars=vm.boardChars;
+            int[] scores= vm.getScores();
+            //updatePlayerScores(scores);
+            updateScores(scores);
+            scoreTable.refresh();
             redraw();
         }
     }

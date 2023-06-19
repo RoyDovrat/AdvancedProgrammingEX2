@@ -68,6 +68,7 @@ public class modelGuest extends Observable implements interfaceModel {
             e.printStackTrace();
         }
     }
+    
     private void setResponse(String string) {
         this.resp = string;
         this.respValid = true;
@@ -90,6 +91,7 @@ public class modelGuest extends Observable implements interfaceModel {
         out.println(mPlayerName+",requestCurrentPlayer");
         out.flush();
         CurrentPlayerName = getResponseFromHost();
+        System.out.println("current player at modelGuest "+CurrentPlayerName);
         return CurrentPlayerName;
     }
 
@@ -100,6 +102,7 @@ public class modelGuest extends Observable implements interfaceModel {
                     while(true){
                         try{
                             Thread.sleep(1000);
+                            System.out.println("in infinite loop");
                             out.println(CurrentPlayerName+",updateBoard");
                             out.flush();
                             String strFromHost= getResponseFromHost();
@@ -145,6 +148,7 @@ public class modelGuest extends Observable implements interfaceModel {
         strTiles= getResponseFromHost();
         System.out.println(strTiles);
         tilesSentFlag = true;
+        //updateBoard();
     }
    
     @Override
@@ -160,8 +164,6 @@ public class modelGuest extends Observable implements interfaceModel {
             }
         return false;
     }
-
-    
     
     @Override
     public byte[][] getBonusBoard() {
@@ -195,19 +197,22 @@ public class modelGuest extends Observable implements interfaceModel {
         }
         return boardChars;
     }
-    
-    @Override
+
+     @Override
     public byte mGetDl() {
         return board.dl;
     }
+
     @Override
     public byte mGetDw() {
         return board.dw;
     }
+
     @Override
     public byte mGetTl() {
         return board.tl;
     }
+
     @Override
     public byte mGetTw() {
         return board.tw;
@@ -241,13 +246,13 @@ public class modelGuest extends Observable implements interfaceModel {
     @Override
     public void addListener(InvalidationListener arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addListener'");
+        //throw new UnsupportedOperationException("Unimplemented method 'addListener'");
     }
 
     @Override
     public void removeListener(InvalidationListener arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeListener'");
+        //throw new UnsupportedOperationException("Unimplemented method 'removeListener'");
     }
 
     @Override
@@ -315,6 +320,39 @@ public class modelGuest extends Observable implements interfaceModel {
     public void mSkipTurn() {
         out.println(mPlayerName +",SkipTurn");
         out.flush();
+    }
+    @Override
+    public String getPlayersName() {
+        out.println(mPlayerName +",playersNames");
+        out.flush();
+        String playersNames= getResponseFromHost();
+        return playersNames;
+    }
+    
+    @Override
+    public int[] getScores() {
+        out.println(CurrentPlayerName+",updateScores");
+        out.flush();
+        strTiles= getResponseFromHost();
+        String trimmedString = strTiles.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+        
+        // Split the string by commas
+        String[] numbers = trimmedString.split(",");
+        
+        // Create an integer array and parse the numbers
+        int[] intArray = new int[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            intArray[i] = Integer.parseInt(numbers[i]);
+        }
+        return intArray;
+    }
+
+    @Override
+    public String getCurrentPlayer() {
+        // TODO Auto-generated method stub
+        //throw new UnsupportedOperationException("Unimplemented method 'getCurrentPlayer'");
+        String str="what";
+        return str;
     }
 
 }

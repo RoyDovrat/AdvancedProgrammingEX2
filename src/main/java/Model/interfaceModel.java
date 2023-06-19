@@ -36,8 +36,11 @@ public interface interfaceModel extends Observable  {
     public boolean getValidWord();
     public int getScore();
     public String getMStrLetterTiles();
+    public int[] getScores();
 
     public void start(); 
     public void mSkipTurn();
-    
+    public String getPlayersName();
+    public String CurrentPlayerName();
+    public String getCurrentPlayer();
 }

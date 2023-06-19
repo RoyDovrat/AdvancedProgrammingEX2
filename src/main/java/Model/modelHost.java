@@ -34,6 +34,7 @@ public class modelHost extends Observable implements interfaceModel {
     byte[][] boardData;
     int mScore, port, MaxThreads, numOfPlayers = 0, numPlayersChosen=1;
     Tile[][] letterTiles = new Tile[4][7];
+    int[] score= new int[4];
     Tile.Bag bag = new Tile.Bag();
     ArrayList<String> players = new ArrayList<String>();
     private int currentTurnIndex = 0;
@@ -42,6 +43,7 @@ public class modelHost extends Observable implements interfaceModel {
     ExecutorService executor;
     Set<Socket> sockets;
     Map<String, Integer> nameNumberMap = new HashMap<>();
+    char[][] boardChars= new char[15][15];
 
     public modelHost (int port, modelGuestHandler ch, int MaxThreads) {
         this.port=port;
@@ -108,7 +110,6 @@ public class modelHost extends Observable implements interfaceModel {
             }
         }
     }
-
 
     public int getCurrentPlayerIndex(String name){
         return nameNumberMap.get(name);
@@ -208,8 +209,6 @@ public class modelHost extends Observable implements interfaceModel {
         }
         return wordTiles;
     }
-    
-
       
     // Method to determine the next player's turn
     public void nextPlayerTurn() {
@@ -218,9 +217,11 @@ public class modelHost extends Observable implements interfaceModel {
             currentTurnIndex = (currentTurnIndex + 1) % players.size();
             //App.nowPlaying = players.get(currentTurnIndex);
             currentPlayer=players.get(currentTurnIndex);
+            setChanged();
+            notifyObservers();
+            System.out.println("corrent player is  "+currentPlayer);
         }
     }
-
     
     // Method to notify the current player that it's their turn
     public String CurrentPlayer() {
@@ -230,6 +231,7 @@ public class modelHost extends Observable implements interfaceModel {
         return players.get(currentTurnIndex);
  
     }
+    
     public String getCurrentPlayer(){
         return this.currentPlayer;
     }
@@ -242,25 +244,6 @@ public class modelHost extends Observable implements interfaceModel {
         }
         return null; // Player not found
     }
-    
-
-  // Player class representing each player thread
-    // private class Player extends Thread {
-    //     private Semaphore playerSemaphore;
-    //     private boolean isPlayerTurn;
-
-    //     public Player() {
-    //         playerSemaphore = new Semaphore(0);
-    //         isPlayerTurn = false;
-    //     }
-    
-    //     // Method for a player to start their turn
-    //     public void startTurn() {
-    //         isPlayerTurn = true;
-    //         playerSemaphore.release();
-    //     }
-  
-    // }
 
     public boolean validateWordInput(String nowPlayingName, String wordInput) { //check if letters of word is in tiles
         int playerNum = getCurrentPlayerIndex(nowPlayingName);
@@ -284,6 +267,10 @@ public class modelHost extends Observable implements interfaceModel {
         return true;
     }
     
+    public int[] getScores(){
+        return this.score;
+    }
+    
     public char[][] checkWord(String nowPlayingName ,String wordInput, int mouseRow, int mouseCol) { //gets word and location and checks it, move to modelHost
         if(wordInput == null){
             return getBoardChars();
@@ -291,11 +278,13 @@ public class modelHost extends Observable implements interfaceModel {
         
         mWordInput=wordInput;
         wordSentFlag=true;
+        int playerNum = getCurrentPlayerIndex(nowPlayingName);
         Tile[] tiles=wordInputToTiles(nowPlayingName ,wordInput);
         Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
         System.out.println(newWord.toString());
         if(board.boardLegal(newWord) && validateWordInput(nowPlayingName, wordInput)){
-            mScore= board.tryPlaceWord(newWord);
+            score[playerNum]+= board.tryPlaceWord(newWord);
+            System.out.println("score in model host= "+score[playerNum]);
             removeTilesFromLetterTiles(nowPlayingName, newWord);
             tryAgain = false;
             setChanged();
@@ -334,7 +323,6 @@ public class modelHost extends Observable implements interfaceModel {
     @Override
     public char[][] getBoardChars() { //returns a matrix with the board letters and 0's where there aren't any.
         boardData=board.getBonus();
-        char[][] boardChars= new char[15][15];
         Tile[][] copyBoard=board.getTiles();
         for(int i=0; i<boardData.length; i++){
             for(int j=0; j<boardData.length; j++){
@@ -347,6 +335,14 @@ public class modelHost extends Observable implements interfaceModel {
             }
         }
         return boardChars;
+    }
+
+    public void SetBoardChars(char[][] updatedBoard){
+        for(int i=0; i<15; i++){
+            for(int j=0; j<15; j++){
+                
+            }
+        }
     }
     
     @Override
@@ -393,7 +389,7 @@ public class modelHost extends Observable implements interfaceModel {
     @Override
     public void addListener(InvalidationListener arg0) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addListener'");
+        //throw new UnsupportedOperationException("Unimplemented method 'addListener'");
     }
 
     @Override
@@ -405,17 +401,19 @@ public class modelHost extends Observable implements interfaceModel {
     @Override
     public char[][] mSubmitWord(String nowPlayingName, String wordInput, int mouseRow, int mouseCol) {
         System.out.println("in model "+wordInput);
-        char[][] result= checkWord(nowPlayingName, wordInput, mouseRow, mouseCol);
+        //char[][] result= checkWord(nowPlayingName, wordInput, mouseRow, mouseCol);
+        boardChars=checkWord(nowPlayingName, wordInput, mouseRow, mouseCol);
         for(int i=0; i<15; i++){
             for(int j=0; j<15; j++){
-                System.out.print(result[i][j]);
+                System.out.print(boardChars[i][j]);
             }
             System.out.println("");
         }
         nextPlayerTurn();//update next player
         
- //send board And next player
-        return result;
+    //send board And next player
+        
+        return boardChars;
     }
 
     @Override
@@ -431,6 +429,28 @@ public class modelHost extends Observable implements interfaceModel {
     @Override
     public void mSkipTurn() {
         nextPlayerTurn();
+    }
+
+    @Override
+    public String getPlayersName() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < players.size(); i++) {
+            result.append(players.get(i));
+            
+            if (i < players.size() - 1) {
+                result.append(",");
+            }
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String CurrentPlayerName() {
+        if (currentTurnIndex==0){
+            return players.get(0);
+        }
+        System.out.println("Curren player name at model host "+ getCurrentPlayer());
+        return getCurrentPlayer();
     }
 
 }

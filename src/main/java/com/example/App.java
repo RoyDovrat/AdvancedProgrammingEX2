@@ -39,7 +39,6 @@ public class App extends Application {
         port_num = port;
     }
 
-
     public static void main(String[] args) {
         launch();
     }

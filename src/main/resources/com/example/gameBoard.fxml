@@ -6,6 +6,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -38,9 +40,14 @@
             <Label fx:id="ColBoard" text="Col:" />
             <Button fx:id="submitButton" mnemonicParsing="false" onAction="#submitWord" text="submit word" />
             <Button fx:id="SkipTurnButton" mnemonicParsing="false" onAction="#SkipTurn" prefHeight="25.0" prefWidth="82.0" text="Skip Turn" />
-            <Label fx:id="score" text="score" textAlignment="CENTER" />
+            <Label fx:id="CurrentPlayer" text="Current Player: " textAlignment="CENTER" />
             <Label fx:id="ModeLabel" prefHeight="33.0" prefWidth="79.0" textAlignment="CENTER" />
             <Label fx:id="NameLabel" prefHeight="17.0" prefWidth="115.0" />
+            <TableView fx:id="scoreTable" prefHeight="200.0" prefWidth="63.0">
+              <columns>
+                <TableColumn fx:id="nameColumn" prefWidth="113.99998982747395" text="player       score" />
+              </columns>
+            </TableView>
          </children>
       </VBox>
    </left>

@@ -3,6 +3,7 @@ package Model;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import Server.ClientHandler;
@@ -46,7 +47,7 @@ public class modelGuestHandler implements ClientHandler {
                 System.out.println("updateBoard");
                 char[][] arr = host.getBoardChars();  //check if returns current board
                 char[] oneDArray = new char[15 * 15];
-                System.out.println("oneDArray is: "+oneDArray);
+                System.out.println("oneDArray is: "+oneDArray.toString());
                 int index = 0; // Index of current position in the 1D array
                 System.out.println("index:");
                 for (int i = 0; i < 15; i++) {
@@ -58,6 +59,17 @@ public class modelGuestHandler implements ClientHandler {
                 String str = String.valueOf(oneDArray)+","+host.CurrentPlayer();//send board+next player name
                 System.out.println("board str is: "+str);
                 //setResponse(str);
+                out.println(str);
+            }
+            if (args[1].equals("updateScores")){
+                System.out.println("guest handler-updateScores");
+                int[] scores= host.getScores(); 
+                Integer[] integerArray = new Integer[scores.length];
+                for (int i = 0; i < scores.length; i++) {
+                    integerArray[i] = Integer.valueOf(scores[i]);
+                }
+                String str = Arrays.toString(integerArray);
+                System.out.println("guest handler"+str);
                 out.println(str);
             }
             if (args[1].equals("SkipTurn")){
@@ -79,6 +91,12 @@ public class modelGuestHandler implements ClientHandler {
             if (args[1].equals("requestCurrentPlayer")){
                 System.out.println("requestCurrentPlayer");
                 String str = host.getCurrentPlayer(); 
+                System.out.println("guest handler"+str);
+                out.println(str);
+            }
+            if (args[1].equals("playersNames")){
+                System.out.println("requestCurrentPlayer");
+                String str = host.getPlayersName(); 
                 System.out.println("guest handler"+str);
                 out.println(str);
             }
