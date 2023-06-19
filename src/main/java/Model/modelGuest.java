@@ -68,6 +68,11 @@ public class modelGuest extends Observable implements interfaceModel {
             e.printStackTrace();
         }
     }
+    /*Platform.runLater(() -> {
+                                    setChanged();
+                                    notifyObservers("updateHandMiddleOfGame"+finalLetters);
+                                });
+                                    */
     
     private void setResponse(String string) {
         this.resp = string;

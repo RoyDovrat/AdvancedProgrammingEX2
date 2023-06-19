@@ -19,6 +19,7 @@ import com.example.App;
 
 import Server.ClientHandler;
 import Server.DictionaryManager;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import java.util.HashMap;
 import java.util.Map;
@@ -210,6 +211,7 @@ public class modelHost extends Observable implements interfaceModel {
         return wordTiles;
     }
       
+
     // Method to determine the next player's turn
     public void nextPlayerTurn() {
         if(!this.tryAgain){
@@ -217,8 +219,13 @@ public class modelHost extends Observable implements interfaceModel {
             currentTurnIndex = (currentTurnIndex + 1) % players.size();
             //App.nowPlaying = players.get(currentTurnIndex);
             currentPlayer=players.get(currentTurnIndex);
-            setChanged();
-            notifyObservers();
+            Platform.runLater(() -> {
+                setChanged();
+                notifyObservers();
+            });
+                                
+            // setChanged();
+            // notifyObservers();
             System.out.println("corrent player is  "+currentPlayer);
         }
     }

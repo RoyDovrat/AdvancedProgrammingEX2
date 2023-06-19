@@ -126,7 +126,7 @@ public class BoardDisplayer implements Observer {
         validWord.textProperty().bind((vm.vmValidWord.asString()));//חזור
         //CurrentPlayer.textProperty().bind(vm.vmCurrentPlayer);
         // StringProperty CurrentPlayerText = new SimpleStringProperty();
-        //CurrentPlayer.textProperty().bind(Bindings.concat("Player: ", vm.vmCurrentPlayer));
+        CurrentPlayer.textProperty().bind(Bindings.concat("Player: ", vm.vmCurrentPlayer));
         // CurrentPlayer.textProperty().bind(CurrentPlayerText);
     }   
   
