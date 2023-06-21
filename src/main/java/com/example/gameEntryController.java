@@ -31,7 +31,6 @@ public class gameEntryController {
         if(!App.isHost){App.port_guest = setEnterPort();}
         App.setRoot("MainWindow");
     }
-    
     @FXML
     Label portNum;
     @FXML
@@ -46,16 +45,18 @@ public class gameEntryController {
         int port =  (int) (Math.random() * (1001) + 5000);
         App.setPortNumber(port);
         portNum.setVisible(true);
-        //txtEnterPort.setVisible(false);
+        txtEnterPort.setVisible(false);
         String str = "" + port;
         portNum.setText("Host number: " + str);
         System.out.println("port number in gameEntry:"+port);
+        portNum.setVisible(true);
 
     }
     @FXML
     public void GuestChosen(){
         txtEnterPort.setVisible(true);
         NumberOfPlayers.setVisible(false);
+        portNum.setVisible(false);
         GameMode.setText("Guest Mode");
         setIsHost(false);
     }

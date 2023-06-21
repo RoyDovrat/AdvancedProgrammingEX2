@@ -43,4 +43,5 @@ public interface interfaceModel extends Observable  {
     public String getPlayersName();
     public String CurrentPlayerName();
     public String getCurrentPlayer();
+    public char[][] getBoardArray();
 }

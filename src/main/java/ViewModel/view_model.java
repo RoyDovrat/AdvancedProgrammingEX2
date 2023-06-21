@@ -29,6 +29,8 @@ public class view_model extends Observable implements Observer{
     public char[] vmLetterTiles;
     public char[][] boardChars;
     int[] scores=  new int[4];
+
+    boolean newGameStarted=false;
     
 
     public view_model (interfaceModel m2){
@@ -40,7 +42,12 @@ public class view_model extends Observable implements Observer{
         vmCurrentPlayer=new SimpleStringProperty();
         vmPlayerName=new SimpleStringProperty();
     }
-
+    public boolean getNewGameStarted(){
+        return this.newGameStarted;
+    }
+    public void setNewGameBoardStarted(boolean flag){
+        this.newGameStarted=flag;
+    }
     public char[][] vmSubmitWord(String nowPlayingName, int mouseRow, int mouseCol){
         System.out.println("in viewmodel "+wordInput.get());
         String getWordIn = wordInput.get();
@@ -108,8 +115,9 @@ public class view_model extends Observable implements Observer{
         return m.mCheckIfEnoughPlayers();
     }
 
-    public void vmGetCurrentBoard(){
+    public char[][] vmGetCurrentBoard(){
         boardChars=m.getBoardChars();
+        return boardChars;
     }
     public String getPlayersName(){
         return m.getPlayersName();
@@ -125,20 +133,42 @@ public class view_model extends Observable implements Observer{
     @Override
     public void update(Observable o, Object arg) {
         if(o==m){ 
-            vmGetCurrentBoard();
+            
+            if(arg.equals("startNewGame")){
+                newGameStarted=true;
+                setChanged();
+                notifyObservers("startNewGame");
+            }
+            if(arg.equals("updatedBoard")){
+                boardChars=m.getBoardArray();
+                System.out.print("Debugging board for update (in view_model):");
+                for (int i = 0; i < 15; i++) {
+                    for (int j = 0; j < 15; j++) {
+                        System.out.print(boardChars[i][j]);
+                    }
+                    System.out.print("\n");
+                } 
+                setChanged();
+                notifyObservers("updatedBoard");
+            }
+            if(arg.equals("BoardFromHost")){
+                vmGetCurrentBoard();
+                setChanged();//HERE
+                notifyObservers("BoardFromHost");
+            }
+            
             scores=vmUpdateScores();
             boolean isValid = m.getValidWord();
             ((WritableBooleanValue) vmValidWord).set(isValid);//getScore
             String currentPlayer = m.getCurrentPlayer();
             (vmCurrentPlayer).set(currentPlayer);//getScore
             setChanged();//HERE
-            notifyObservers();;
+            notifyObservers(" ");
         }
     }
 
     public void vmSkipTurn() {
-        m.mSkipTurn();
-        
+        m.mSkipTurn();  
     }
 
 

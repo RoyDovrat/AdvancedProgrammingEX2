@@ -40,7 +40,7 @@ import ViewModel.view_model;
 public class BoardDisplayer implements Observer {
     
     byte[][] boardData; //removed to model
-    char[][] boardChars=new char[15][15];
+    char[][] boardChars;//=new char[15][15];
     view_model vm;  
     int cCol, cRow, numOfPlayersChosen;
     char[] vLetterTiles;
@@ -106,7 +106,6 @@ public class BoardDisplayer implements Observer {
     public void HostChosen(){
         GameMode.setText("Host Mode");
         isHost=true;
-
     }
     @FXML
     public void GuestChosen(){
@@ -160,8 +159,6 @@ public class BoardDisplayer implements Observer {
 
     @FXML
     public void setNewGameBoard(){
-        //while(this.NumberOfPlayers)
-    
         if (myName!=null){
            
             while(!vm.vmCheckIfEnoughPlayers()){
@@ -260,7 +257,6 @@ public class BoardDisplayer implements Observer {
     
     @FXML
     public void submitWord(){
-        
         System.out.println("word input in view: "+vWordInput.getText());
         boardChars=vm.vmSubmitWord(this.myName, mouseRow,mouseCol); 
         for(int i=0; i<boardChars[0].length; i++){
@@ -334,6 +330,7 @@ public class BoardDisplayer implements Observer {
         CurrentPlayer.setVisible(false);
         SkipTurnButton.setVisible(false);
         scoreTable.setVisible(false);
+        boardChars =new char[15][15];
     }
 
     public void redraw(){
@@ -447,12 +444,37 @@ public class BoardDisplayer implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o==vm){
-            boardChars=vm.boardChars;
+            if(arg.equals("startNewGame")){
+                setNewGameBoard();
+                vm.setNewGameBoardStarted(false);
+            }
+            if(arg.equals("updatedBoard")){
+                boardChars=vm.boardChars;
+                System.out.print("Debugging board for update (in view):");
+                for (int i = 0; i < 15; i++) {
+                    for (int j = 0; j < 15; j++) {
+                        System.out.print(boardChars[i][j]);
+                    }
+                    System.out.print("\n");
+                } 
+                redraw();
+            }
+            if(PlayerName.toString().equals("roy")){
+                boardChars=vm.vmGetCurrentBoard();
+                System.out.print("Debugging board for update of host (in view):");
+                for (int i = 0; i < 15; i++) {
+                    for (int j = 0; j < 15; j++) {
+                        System.out.print(boardChars[i][j]);
+                    }
+                    System.out.print("\n");
+                } 
+
+                redraw();
+            }
             int[] scores= vm.getScores();
-            //updatePlayerScores(scores);
             updateScores(scores);
             scoreTable.refresh();
-            redraw();
+            
         }
     }
     

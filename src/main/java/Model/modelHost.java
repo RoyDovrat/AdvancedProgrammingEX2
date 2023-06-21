@@ -140,7 +140,15 @@ public class modelHost extends Observable implements interfaceModel {
   
     @Override
     public void msetStart(){
-        
+        try {
+            updateGuests("startNewGame");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public char[][] getBoardArray(){
+        return this.boardChars;
     }
 
     public String restartLetterTiles(String nowPlayingName){ 
@@ -221,13 +229,21 @@ public class modelHost extends Observable implements interfaceModel {
             currentPlayer=players.get(currentTurnIndex);
             Platform.runLater(() -> {
                 setChanged();
-                notifyObservers();
+                notifyObservers(" ");
             });
                                 
             // setChanged();
             // notifyObservers();
             System.out.println("corrent player is  "+currentPlayer);
         }
+    }
+
+    public void updateGuests(String newUpdate) throws IOException{
+        for(Socket client: sockets){
+            out=new PrintWriter(client.getOutputStream());
+            out.println(newUpdate);
+            out.flush();
+        }  
     }
     
     // Method to notify the current player that it's their turn
@@ -294,8 +310,6 @@ public class modelHost extends Observable implements interfaceModel {
             System.out.println("score in model host= "+score[playerNum]);
             removeTilesFromLetterTiles(nowPlayingName, newWord);
             tryAgain = false;
-            setChanged();
-            notifyObservers();
         }
         else{
             //next player is current player
@@ -417,9 +431,37 @@ public class modelHost extends Observable implements interfaceModel {
             System.out.println("");
         }
         nextPlayerTurn();//update next player
+
+        //make the array a string:
+        char[] oneDArray = new char[15 * 15];
+        System.out.println("oneDArray is: "+oneDArray.toString());
+        int index = 0; // Index of current position in the 1D array
+        System.out.println("index:");
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                oneDArray[index] = boardChars[i][j];
+                index++;
+            }
+        }
+        String str = String.valueOf(oneDArray);
+        System.out.println("check word in host: "+str);
+        try {
+            updateGuests("updatedBoard,"+str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /* 
+        Platform.runLater(() -> {
+            setChanged();
+            notifyObservers("updatedBoard,"+str);
+        });
+        */
+        //Platform.runLater(() -> {
+        setChanged();
+        notifyObservers("updatedBoard");
+        //});
         
-    //send board And next player
-        
+        //send board And next player
         return boardChars;
     }
 

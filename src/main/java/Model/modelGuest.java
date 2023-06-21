@@ -12,6 +12,7 @@ import java.util.concurrent.Semaphore;
 import com.example.App;
 
 import Server.DictionaryManager;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 
 public class modelGuest extends Observable implements interfaceModel {
@@ -46,9 +47,20 @@ public class modelGuest extends Observable implements interfaceModel {
                             String res= in.nextLine(); //input from host
                             System.out.println("response in guest"+res);
                             setResponse(res);
-                            if (res.equals("YourTurn")) { //new
-                                myTurn = true;
-                                turnSemaphore.release();
+                            String [] args= res.split(",");
+                            if (args[0].equals("startNewGame")) {
+                                Platform.runLater(() -> {
+                                    setChanged();
+                                    notifyObservers("startNewGame");
+                                });     
+                            }
+                            if (args[0].equals("updatedBoard")) {
+                                Platform.runLater(() -> {
+                                    System.out.println("in update board!!!!!!!!!!!");
+                                    makeUpdatedBoard(args[1]);
+                                    setChanged();
+                                    notifyObservers("updatedBoard");
+                                });     
                             }
                         }
                         else{//System.out.println("no next input in modelGuest");
@@ -68,11 +80,6 @@ public class modelGuest extends Observable implements interfaceModel {
             e.printStackTrace();
         }
     }
-    /*Platform.runLater(() -> {
-                                    setChanged();
-                                    notifyObservers("updateHandMiddleOfGame"+finalLetters);
-                                });
-                                    */
     
     private void setResponse(String string) {
         this.resp = string;
@@ -122,7 +129,7 @@ public class modelGuest extends Observable implements interfaceModel {
                                 }
                             }
                             setChanged();
-                            notifyObservers();
+                            notifyObservers(" ");
                         }catch (Exception e){
                             System.out.println("getResponse exception");
                         }
@@ -184,6 +191,24 @@ public class modelGuest extends Observable implements interfaceModel {
     public void mThreePlayersClicked(){}
     @Override
     public void mFourPlayersClicked(){}
+
+    public void makeUpdatedBoard(String strBoard){
+        boardArray = new char[15][15];
+        int index = 0;
+        System.out.print("Debugging board for update (in model Guest):");
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                System.out.print(boardArray[i][j]);
+                boardArray[i][j] = strBoard.charAt(index);
+                index++;
+            }
+            System.out.print("\n");
+        } 
+    }
+    
+    public char[][] getBoardArray(){
+        return this.boardArray;
+    }
 
     @Override
     public char[][] getBoardChars() { //returns a matrix with the board letters and 0's where there aren't any.
@@ -287,7 +312,7 @@ public class modelGuest extends Observable implements interfaceModel {
         System.out.println("strFromHost "+strFromHost);
 
 
-        char[][] boardArray = new char[15][15]; // Convert the string to a 2D char array
+        boardArray = new char[15][15]; // Convert the string to a 2D char array
         int index = 0;
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
@@ -338,6 +363,12 @@ public class modelGuest extends Observable implements interfaceModel {
     public int[] getScores() {
         out.println(CurrentPlayerName+",updateScores");
         out.flush();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         strTiles= getResponseFromHost();
         String trimmedString = strTiles.replace("[", "").replace("]", "").replaceAll("\\s+", "");
         
