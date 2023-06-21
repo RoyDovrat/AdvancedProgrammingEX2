@@ -231,7 +231,12 @@ public class modelHost extends Observable implements interfaceModel {
                 setChanged();
                 notifyObservers(" ");
             });
-                                
+            try {
+                updateGuests("currentPlayer,"+currentPlayer);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }                    
             // setChanged();
             // notifyObservers();
             System.out.println("corrent player is  "+currentPlayer);

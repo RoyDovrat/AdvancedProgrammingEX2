@@ -56,27 +56,27 @@ public class modelGuest extends Observable implements interfaceModel {
                             }
                             if (args[0].equals("updatedBoard")) {
                                 Platform.runLater(() -> {
-                                    System.out.println("in update board!!!!!!!!!!!");
                                     makeUpdatedBoard(args[1]);
                                     setChanged();
                                     notifyObservers("updatedBoard");
                                 });     
                             }
-                        }
-                        else{//System.out.println("no next input in modelGuest");
+                            if (args[0].equals("currentPlayer")){
+                                 Platform.runLater(() -> {
+                                    CurrentPlayerName=args[1];
+                                    setChanged();
+                                    notifyObservers(" ");
+                                });  
                             }
-                        
-                        
+                        } 
                     }
                 }        
             });
             t.start();
 
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -385,10 +385,7 @@ public class modelGuest extends Observable implements interfaceModel {
 
     @Override
     public String getCurrentPlayer() {
-        // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'getCurrentPlayer'");
-        String str="what";
-        return str;
+        return this.CurrentPlayerName;
     }
 
 }
