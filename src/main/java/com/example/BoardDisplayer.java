@@ -331,7 +331,6 @@ public class BoardDisplayer implements Observer {
         SkipTurnButton.setVisible(false);
         scoreTable.setVisible(false);
         boardChars =new char[15][15];
-        CurrentPlayer.setText("roy");
     }
 
     public void redraw(){
@@ -460,18 +459,7 @@ public class BoardDisplayer implements Observer {
                 } 
                 redraw();
             }
-            if(PlayerName.toString().equals("roy")){
-                boardChars=vm.vmGetCurrentBoard();
-                System.out.print("Debugging board for update of host (in view):");
-                for (int i = 0; i < 15; i++) {
-                    for (int j = 0; j < 15; j++) {
-                        System.out.print(boardChars[i][j]);
-                    }
-                    System.out.print("\n");
-                } 
-
-                redraw();
-            }
+            
             int[] scores= vm.getScores();
             updateScores(scores);
             scoreTable.refresh();
