@@ -14,14 +14,6 @@ public class modelGuestHandler implements ClientHandler {
     modelHost host;
     int numOfPlayers;
     String nowPlayingName;
-    
-// in handle client 1. new to buffer reader (in scrabble habdler) in+ out
-// new read lines that gets the login request from the player
-// busy wait untill number of players is complete
-// host sends guest a message of start game.
-// init game in model- make order of player+init tiles
-//loop that checks if game hasnt finished
-//read request - run a methood and return result.
 
     public void setHost(modelHost host){ //figure out
         this.host=host;
@@ -35,7 +27,7 @@ public class modelGuestHandler implements ClientHandler {
         
         while (in.hasNext()) {//read from guest
             String input = in.nextLine();
-            System.out.println("model client handler, input= "+ input);
+            //System.out.println("model client handler, input= "+ input);
             String [] args= input.split(",");
             this.nowPlayingName = args[0];
              if (args[1].equals("submitName")){
@@ -74,6 +66,7 @@ public class modelGuestHandler implements ClientHandler {
             }
             if (args[1].equals("SkipTurn")){
                 System.out.println("guest handler-mSkipTurn");
+                host.tryAgain=false;
                 host.nextPlayerTurn();
             }
             if (args[1].equals("joingame")){

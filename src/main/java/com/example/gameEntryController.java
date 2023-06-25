@@ -26,7 +26,7 @@ public class gameEntryController {
     MenuButton NumberOfPlayers;
 
     @FXML
-    private void switchToMainWindow() throws IOException {
+    public void switchToMainWindow() throws IOException {
       //  System.out.println("is host value is:"+isHost);
         if(!App.isHost){App.port_guest = setEnterPort();}
         App.setRoot("MainWindow");
@@ -35,6 +35,7 @@ public class gameEntryController {
     Label portNum;
     @FXML
     TextField txtEnterPort;
+
     @FXML
     public void HostChosen() throws IOException{
         GameMode.setText("Host Mode");
@@ -103,6 +104,10 @@ public class gameEntryController {
     public void fourPlayersGame(){
         NumberOfPlayers.setText("Four Players");
         App.numOfPlayersChosen = 4;
+    }
+    
+    public void initialize(){
+        txtEnterPort.setVisible(false);
     }
 
 

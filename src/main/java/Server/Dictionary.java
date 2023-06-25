@@ -1,17 +1,13 @@
 package Server;
-
 import java.io.File;
 import java.util.Scanner;
-
-import Server.LFU;
-import Server.LRU;
 
 public class Dictionary {
 	
 	CacheManager exists,notExists;
 	BloomFilter bf;
 	private String[] fileNames;
-	ParIOSearcher searcher;
+	IOSearcher searcher;
 	
 	public Dictionary(String...fileNames) {
 		this.fileNames=fileNames;
@@ -27,7 +23,7 @@ public class Dictionary {
 				s.close();
 			}catch(Exception e) {}
 		}		
-		searcher=new ParIOSearcher();
+		searcher=new IOSearcher(); 
 	}
 	
 	public boolean query(String word) {
@@ -35,13 +31,11 @@ public class Dictionary {
 			return true;
 		if(notExists.query(word))
 			return false;
-		
 		boolean doesExist = bf.contains(word);
 		if(doesExist)
 			exists.add(word);
 		else
-			notExists.add(word);
-		
+			notExists.add(word);	
 		return doesExist;
 	}
 	
@@ -60,3 +54,4 @@ public class Dictionary {
 	}
 
 }
+

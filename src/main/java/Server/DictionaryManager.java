@@ -1,10 +1,10 @@
 package Server;
+
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.concurrent.Executors;
+
 
 public class DictionaryManager {
-	private String[] fileNames;
+	//private String[] fileNames;
 	HashMap<String, Dictionary> map;
 	private static DictionaryManager DM;
 	

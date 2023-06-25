@@ -27,17 +27,17 @@
                   <Insets left="400.0" right="300.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="txtEnterPort" prefHeight="25.0" prefWidth="140.0">
+            <TextField fx:id="txtEnterPort" prefHeight="25.0" prefWidth="140.0" promptText="port number">
                <VBox.margin>
                   <Insets left="400.0" right="400.0" />
                </VBox.margin>
             </TextField>
             <MenuButton fx:id="NumberOfPlayers" mnemonicParsing="false" text="Number Of Players" visible="false">
               <items>
-                <MenuItem fx:id="onePlayer" mnemonicParsing="false" text="1" />
-                <MenuItem fx:id="twoPlayers" mnemonicParsing="false" text="2" />
-                  <MenuItem fx:id="threePlayers" mnemonicParsing="false" text="3" />
-                  <MenuItem fx:id="fourPlayers" mnemonicParsing="false" text="4" />
+                <MenuItem fx:id="onePlayer" mnemonicParsing="false" onAction="#onePlayerGame" text="1" />
+                <MenuItem fx:id="twoPlayers" mnemonicParsing="false" onAction="#twoPlayersGame" text="2" />
+                  <MenuItem fx:id="threePlayers" mnemonicParsing="false" onAction="#threePlayersGame" text="3" />
+                  <MenuItem fx:id="fourPlayers" mnemonicParsing="false" onAction="#fourPlayersGame" text="4" />
               </items>
                <VBox.margin>
                   <Insets left="400.0" right="350.0" />

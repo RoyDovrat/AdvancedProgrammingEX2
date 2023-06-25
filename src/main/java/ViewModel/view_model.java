@@ -129,6 +129,10 @@ public class view_model extends Observable implements Observer{
     public int[] getScores(){
         return m.getScores();
     }
+    
+    public String vmGetCurrentPlayer(){
+        return m.getCurrentPlayer();
+    }
 
     @Override
     public void update(Observable o, Object arg) {
@@ -156,10 +160,19 @@ public class view_model extends Observable implements Observer{
                 setChanged();//HERE
                 notifyObservers("BoardFromHost");
             }
-            
+            if(arg.equals("ValidWord")){
+                boolean isValid = m.getValidWord();
+                ((WritableBooleanValue) vmValidWord).set(isValid);//getScore
+                setChanged();//HERE
+                notifyObservers("ValidWord");
+            }
+            if(arg.equals("NotValidWord")){
+                boolean isValid = m.getValidWord();
+                ((WritableBooleanValue) vmValidWord).set(isValid);//getScore
+                setChanged();//HERE
+                notifyObservers("NotValidWord");
+            }
             scores=vmUpdateScores();
-            boolean isValid = m.getValidWord();
-            ((WritableBooleanValue) vmValidWord).set(isValid);//getScore
             String currentPlayer = m.getCurrentPlayer();
             (vmCurrentPlayer).set(currentPlayer);//getScore
             setChanged();//HERE

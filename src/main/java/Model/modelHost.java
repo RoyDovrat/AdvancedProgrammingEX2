@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Observable;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -17,8 +18,10 @@ import java.util.concurrent.Semaphore;
 
 import com.example.App;
 
+import Server.BookScrabbleHandler;
 import Server.ClientHandler;
 import Server.DictionaryManager;
+import Server.MyServer;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import java.util.HashMap;
@@ -27,17 +30,24 @@ import java.util.Map;
 public class modelHost extends Observable implements interfaceModel {
     PrintWriter out;
     Scanner in;
-    String mPlayerName, mStrLetterTiles, line = "", mWordInput, currentPlayer;
+    String mPlayerName;
+    String mStrLetterTiles;
+    String line = "";
+    String mWordInput;
+    String currentPlayer;
     Socket server;
-    boolean flag=false, mIsHost=true, isVertical=false, mValidWord, wordSentFlag, tryAgain = false;
+    boolean flag=false, mIsHost=true, isVertical=false, mValidWord, wordSentFlag;
+    public boolean tryAgain = false, testMode=false;
     boolean stop;
     Board board=new Board();
     byte[][] boardData;
-    int mScore, port, MaxThreads, numOfPlayers = 0, numPlayersChosen=1;
-    Tile[][] letterTiles = new Tile[4][7];
+    int mScore, port, MaxThreads;
+    int numOfPlayers = 0;
+    int numPlayersChosen=1;
+    public Tile[][] letterTiles = new Tile[4][7];
     int[] score= new int[4];
     Tile.Bag bag = new Tile.Bag();
-    ArrayList<String> players = new ArrayList<String>();
+    public ArrayList<String> players = new ArrayList<String>();
     private int currentTurnIndex = 0;
     private Semaphore turnSemaphore;
     ClientHandler ch;
@@ -111,7 +121,9 @@ public class modelHost extends Observable implements interfaceModel {
             }
         }
     }
-
+    public void close() {
+        stop=true;
+    }
     public int getCurrentPlayerIndex(String name){
         return nameNumberMap.get(name);
     }
@@ -309,10 +321,10 @@ public class modelHost extends Observable implements interfaceModel {
         int playerNum = getCurrentPlayerIndex(nowPlayingName);
         Tile[] tiles=wordInputToTiles(nowPlayingName ,wordInput);
         Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
-        System.out.println(newWord.toString());
+        //System.out.println(newWord.toString());
         if(board.boardLegal(newWord) && validateWordInput(nowPlayingName, wordInput)){
             score[playerNum]+= board.tryPlaceWord(newWord);
-            System.out.println("score in model host= "+score[playerNum]);
+            //System.out.println("score in model host= "+score[playerNum]);
             removeTilesFromLetterTiles(nowPlayingName, newWord);
             tryAgain = false;
         }
@@ -323,21 +335,13 @@ public class modelHost extends Observable implements interfaceModel {
         return getBoardChars();
     }
     
-    
-    public void QueuesOrder(){
-        //while
-        //send current player
-        //wait for response- finish
-
-        
-    }
 
     @Override
     public void setPlayerName(String Name) { //send name to host
         mPlayerName=Name;
         nameNumberMap.put(Name,numOfPlayers );
         players.add(Name);
-        System.out.println("name in model: " + mPlayerName + " player number: " + numOfPlayers);
+        //System.out.println("name in model: " + mPlayerName + " player number: " + numOfPlayers);
         numOfPlayers = numOfPlayers +1;
     }
     
@@ -424,6 +428,211 @@ public class modelHost extends Observable implements interfaceModel {
         throw new UnsupportedOperationException("Unimplemented method 'removeListener'");
     }
 
+    public static boolean runClient(int port,String query) {
+		try {
+			Socket server=new Socket("localhost",port);
+			PrintWriter out=new PrintWriter(server.getOutputStream());
+			Scanner in=new Scanner(server.getInputStream());
+			out.println(query);
+			out.flush();
+			String res=in.next();
+           
+			in.close();
+			out.close();
+			server.close();
+            if(res.equals("true")){
+                return true;
+            }
+            return false;
+		} catch (IOException e) {
+            //e.printStackTrace();
+		}
+        return false;
+
+	}
+    
+    public boolean CheckWordInTiles(String nowPlayingName,String wordInput) { //check if letters of word is in tiles
+        Tile[] tilesCopy = Arrays.copyOf(letterTiles[getCurrentPlayerIndex(nowPlayingName)], letterTiles[0].length);
+        char[] chars = wordInput.toCharArray();
+        for (char c : chars) {
+            boolean found = false;
+    
+            // Search for a matching character in the tilesCopy array
+            for (int i = 0; i < tilesCopy.length; i++) {
+                if (tilesCopy[i] != null && tilesCopy[i].getLetter() == c) { // Character found in the tilesCopy array
+                    found = true;
+                    tilesCopy[i] = null; // Mark the tile as used by setting its value to null
+                    break;
+                }
+            }
+            if (!found) {
+                return false;// If no matching character is found in the tilesCopy array, return false
+            }
+        }
+        return true;
+    }
+
+    public boolean checkWordInServer(String wordInput){
+        Random r=new Random();
+		int port=6000+r.nextInt(1000);
+        
+		MyServer s=new MyServer(port, new BookScrabbleHandler(),2);
+		s.start();
+		boolean inDictionary= runClient(port, "Q,./searchFiles/Frank Herbert - Dune.txt,"+
+        "./searchFiles/alice_in_wonderland.txt,./searchFiles/Harray Potter.txt,"+
+        "./searchFiles/mobydick.txt,./searchFiles/pg10.txt,./searchFiles/shakespeare.txt,"+
+        "./searchFiles/The Matrix.txt,"+wordInput);
+        if (inDictionary==true){
+            inDictionary=runClient(port, "C,./searchFiles/Frank Herbert - Dune.txt,"+
+             "./searchFiles/alice_in_wonderland.txt,./searchFiles/Harray Potter.txt,"+
+             "./searchFiles/mobydick.txt,./searchFiles/pg10.txt,./searchFiles/shakespeare.txt,"+
+             "./searchFiles/The Matrix.txt,"+wordInput);
+            //System.out.println("in file challange? "+inDictionary);
+        }
+        try {Thread.sleep(2000);} catch (InterruptedException e) {}
+        
+        s.close(); //changed
+        return inDictionary;
+    }
+    
+    public char[][] checkWord2(String nowPlayingName, String wordInput, int mouseRow, int mouseCol) { //gets word and location and checks it, move to modelHost
+        if(wordInput == null){
+            System.out.println("word is null");
+            tryAgain=true;
+            if(!testMode){
+                mValidWord=false;
+                setChanged();
+                notifyObservers("NotValidWord");
+                try {
+                    updateGuests("NotValidWord");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return getBoardChars();
+        }
+        if (!CheckWordInTiles(nowPlayingName, wordInput.toUpperCase())){
+            tryAgain=true;
+            mValidWord=false;
+            System.out.println("word not in tiles");
+            if(!testMode){
+                setChanged();
+                notifyObservers("NotValidWord");
+                try {
+                    updateGuests("NotValidWord");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return getBoardChars();
+            }
+            //send messege to guest- tiles incorrect
+        }
+        mWordInput=wordInput;
+        int playerNum = getCurrentPlayerIndex(nowPlayingName);
+        //query, challange, if board legal, if word in tiles
+
+        //check in dictionary
+        /* 
+		Random r=new Random();
+		int port=6000+r.nextInt(1000);
+		MyServer s=new MyServer(port, new BookScrabbleHandler(),1);
+		s.start();
+		boolean inDictionary= runClient(port, "Q,./searchFiles/Frank Herbert - Dune.txt,"+
+        "./searchFiles/alice_in_wonderland.txt,./searchFiles/Harray Potter.txt,"+
+        "./searchFiles/mobydick.txt,./searchFiles/pg10.txt,./searchFiles/shakespeare.txt,"+
+        "./searchFiles/The Matrix.txt,"+wordInput);
+        if (inDictionary==true){
+            inDictionary=runClient(port, "C,./searchFiles/Frank Herbert - Dune.txt,"+
+             "./searchFiles/alice_in_wonderland.txt,./searchFiles/Harray Potter.txt,"+
+             "./searchFiles/mobydick.txt,./searchFiles/pg10.txt,./searchFiles/shakespeare.txt,"+
+             "./searchFiles/The Matrix.txt,"+wordInput);
+            System.out.println("in file challange? "+inDictionary);
+        }
+        */
+       
+        if (!checkWordInServer(wordInput)){
+            tryAgain=true;
+            mValidWord=false;
+            System.out.println("Word not in dictionarys");
+            if(!testMode){
+                setChanged();
+                notifyObservers("NotValidWord");
+                try {
+                    updateGuests("NotValidWord");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return getBoardChars();
+            
+        }
+
+        wordSentFlag=true;
+
+        Tile[] tiles=wordInputToTiles(nowPlayingName,wordInput.toUpperCase());
+        Word newWord= new Word(tiles, mouseRow, mouseCol, isVertical);
+        //System.out.println(newWord.toString());
+
+        if(board.boardLegal(newWord)){
+            score[playerNum]+= board.tryPlaceWord(newWord);
+            //System.out.println("score in model host= "+score[playerNum]);
+            removeTilesFromLetterTiles(nowPlayingName,newWord); //remove from correct player
+            tryAgain=false;
+            mValidWord=true;
+            if(!testMode){
+                setChanged();
+                notifyObservers("ValidWord");
+                try {
+                    updateGuests("ValidWord");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else{
+            //next player is current player
+            //send messege to guest- place word correctly
+            tryAgain = true;
+        }
+        return getBoardChars();
+    }
+    
+    public char[][] mSubmitWord(String nowPlayingName, String wordInput, int mouseRow, int mouseCol) {
+        //System.out.println("in model "+wordInput);
+        boardChars= checkWord2(nowPlayingName, wordInput, mouseRow, mouseCol);
+        for(int i=0; i<15; i++){
+            for(int j=0; j<15; j++){
+                System.out.print(boardChars[i][j]);
+            }
+            System.out.println("");
+        }
+        if(!testMode){
+            nextPlayerTurn();//update next player
+            //make the array a string:
+            char[] oneDArray = new char[15 * 15];
+            //System.out.println("oneDArray is: "+oneDArray.toString());
+            int index = 0; // Index of current position in the 1D array
+            //System.out.println("index:");
+            for (int i = 0; i < 15; i++) {
+                for (int j = 0; j < 15; j++) {
+                    oneDArray[index] = boardChars[i][j];
+                    index++;
+                }
+            }
+        
+            String str = String.valueOf(oneDArray);
+            //System.out.println("check word in host: "+str);
+            try {
+                updateGuests("updatedBoard,"+str);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setChanged();
+            notifyObservers("updatedBoard");
+        }
+        return boardChars;
+    }
+/* 
     @Override
     public char[][] mSubmitWord(String nowPlayingName, String wordInput, int mouseRow, int mouseCol) {
         System.out.println("in model "+wordInput);
@@ -436,7 +645,6 @@ public class modelHost extends Observable implements interfaceModel {
             System.out.println("");
         }
         nextPlayerTurn();//update next player
-
         //make the array a string:
         char[] oneDArray = new char[15 * 15];
         System.out.println("oneDArray is: "+oneDArray.toString());
@@ -455,21 +663,13 @@ public class modelHost extends Observable implements interfaceModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /* 
-        Platform.runLater(() -> {
-            setChanged();
-            notifyObservers("updatedBoard,"+str);
-        });
-        */
-        //Platform.runLater(() -> {
+        
         setChanged();
         notifyObservers("updatedBoard");
-        //});
         
-        //send board And next player
         return boardChars;
     }
-
+*/
     @Override
     public char[] mRequestFillLetterTiles(String nowPlayingName) {
         return fillLetterTilesFromBag(nowPlayingName).toCharArray();
@@ -482,6 +682,7 @@ public class modelHost extends Observable implements interfaceModel {
 
     @Override
     public void mSkipTurn() {
+        tryAgain=false;
         nextPlayerTurn();
     }
 

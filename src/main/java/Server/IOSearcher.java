@@ -1,15 +1,15 @@
 package Server;
-
 import java.io.File;
 import java.util.Scanner;
 
-public class IOSearcher implements FileSearcher{
+public class IOSearcher {
 
 	boolean stopMe;
 	
 	public IOSearcher() {
 		stopMe=false;
 	}
+	
 	
 	public boolean search(String word, String...fileNames){
 		boolean found=false;

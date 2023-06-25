@@ -31,6 +31,7 @@ public class MainTrain {
 		
 	}
 	
+	
 	public static void client1(int port) {		
 		new Thread(
 		()->{
@@ -38,8 +39,8 @@ public class MainTrain {
 				Socket server=new Socket("localhost", port);		
 				Random r=new Random();
 				
-				Random revital=new Random();
-				int randomNum = revital.nextInt(100);
+				//Random revital=new Random();
+				//int randomNum = revital.nextInt(100);
 				String text = ""+(1000+r.nextInt(100000));
 				String rev=new StringBuilder(text).reverse().toString();
 				PrintWriter outToServer=new PrintWriter(server.getOutputStream());
@@ -107,8 +108,7 @@ public class MainTrain {
 	}
 	
 	public static void testDM() {
-		
-		String t1[]=writeFile("./searchFiles/alice_in_wonderland.txt");
+		String t1[]=writeFile("t1.txt");
 		String t2[]=writeFile("t2.txt");
 		String t3[]=writeFile("t3.txt");
 		

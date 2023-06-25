@@ -87,11 +87,9 @@ public class Board {
 	
 	
 	public boolean boardLegal(Word w) {
-		System.out.println("here0");
 		int row=w.getRow();
 		int col=w.getCol();
 		if(!inBoard(row, col)){
-			System.out.println("here1");
 			return false;
 		}	
 		int eCol,eRow;
@@ -103,7 +101,6 @@ public class Board {
 			eCol=col+w.getTiles().length-1;		
 		}		
 		if(!inBoard(eRow, eCol)){
-			System.out.println("here2");
 			return false;
 		}
 		
@@ -112,12 +109,10 @@ public class Board {
 			return false;
 */
 		if(!isEmpty && !crossTile(w)){
-			System.out.println("here3");
 			return false;
 		}
 
 		if(changesTile(w)){
-			System.out.println("here4");
 			return false;
 		}
 
@@ -135,7 +130,6 @@ public class Board {
 	
 	private ArrayList<Word> getAllWords(Tile[][] ts){
 		ArrayList<Word> ws=new ArrayList<>();
-		
 		// Horizontal scan
 		for(int i=0;i<ts.length;i++) {
 			int j=0;

@@ -20,7 +20,7 @@ public class modelGuest extends Observable implements interfaceModel {
     Scanner in;
     String mPlayerName, mStrLetterTiles, line = "", mWordInput, CurrentPlayerName;
     Socket server;
-    boolean tilesSentFlag=false, mIsHost=true, isVertical=false, mValidWord, wordSentFlag, playerSentFlag = true;
+    boolean mIsHost=true, isVertical=false, mValidWord, wordSentFlag, playerSentFlag = true;
     Board board=new Board();
     byte[][] boardData;
     int mScore, myIndex;
@@ -29,8 +29,9 @@ public class modelGuest extends Observable implements interfaceModel {
     String resp, strTiles;
     boolean respValid;
     private Semaphore turnSemaphore;
-    boolean myTurn = false; 
+    boolean myTurn = false, stop=false; 
     char[][] boardArray;
+    public boolean tilesSentFlag=false;
     
     public modelGuest(int port){
         try {
@@ -42,10 +43,10 @@ public class modelGuest extends Observable implements interfaceModel {
             Thread t= new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while(true){
+                    while(!stop){
                         if(in.hasNext()){
                             String res= in.nextLine(); //input from host
-                            System.out.println("response in guest"+res);
+                            //System.out.println("response in guest"+res);
                             setResponse(res);
                             String [] args= res.split(",");
                             if (args[0].equals("startNewGame")) {
@@ -68,7 +69,27 @@ public class modelGuest extends Observable implements interfaceModel {
                                     notifyObservers(" ");
                                 });  
                             }
+                            if(args[0].equals("ValidWord")){
+                                Platform.runLater(() -> {
+                                    mValidWord=true;
+                                    setChanged();
+                                    notifyObservers("ValidWord");
+                                }); 
+                            }
+                            if(args[0].equals("NotValidWord")){
+                                Platform.runLater(() -> {
+                                    mValidWord=false;
+                                    setChanged();
+                                    notifyObservers("NotValidWord");
+                                });
+                            }
                         } 
+                    }
+                    try {
+                        server.close();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
                 }        
             });
@@ -80,6 +101,9 @@ public class modelGuest extends Observable implements interfaceModel {
             e.printStackTrace();
         }
     }
+    public void close() {
+        stop=true;
+    }
     
     private void setResponse(String string) {
         this.resp = string;
@@ -90,7 +114,7 @@ public class modelGuest extends Observable implements interfaceModel {
         while(!this.respValid){
             try{
                 Thread.sleep(1000);
-                 System.out.println("still waiting");
+                System.out.println("still waiting");
             }catch (Exception e){
                 System.out.println("getResponse exception");
             }
@@ -141,17 +165,19 @@ public class modelGuest extends Observable implements interfaceModel {
     
     @Override
     public void setPlayerName(String Name) { //send name to host
-            mPlayerName=Name;
-            System.out.println("name in model: "+mPlayerName);
-            out.println(mPlayerName +",submitName,"+mPlayerName);
-            out.flush();
-            String str = getResponseFromHost();
-            String [] args= str.split(",");
-            args[0].equals(this.mPlayerName);
-            if(args[1].equals("wait")){
-                System.err.println("commuication is ok");
-            }
+        mPlayerName=Name;
+        //System.out.println("name in model: "+mPlayerName);
+        out.println(mPlayerName +",submitName,"+mPlayerName);
+        out.flush();
+        
+        String str = getResponseFromHost();
+        String [] args= str.split(",");
+        args[0].equals(this.mPlayerName);
+        if(args[1].equals("wait")){
+            System.err.println("commuication is ok");
         }
+        
+    }
     
     @Override
     public void msetStart(){
@@ -289,7 +315,7 @@ public class modelGuest extends Observable implements interfaceModel {
     public char[][] mSubmitWord(String nowPlayingName, String wordInput, int mouseRow, int mouseCol) {
         CurrentPlayerName=CurrentPlayerName();
         if (!mPlayerName.equals(CurrentPlayerName)) { //new
-             System.out.println("");
+            System.out.println("");
             out.println(mPlayerName+",getCurrentBoard");//send to host
             out.flush();
             //add a note- not your turn

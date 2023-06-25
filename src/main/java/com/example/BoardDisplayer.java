@@ -331,6 +331,7 @@ public class BoardDisplayer implements Observer {
         SkipTurnButton.setVisible(false);
         scoreTable.setVisible(false);
         boardChars =new char[15][15];
+        CurrentPlayer.setText("roy");
     }
 
     public void redraw(){
