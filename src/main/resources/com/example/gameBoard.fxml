@@ -48,6 +48,7 @@
                 <TableColumn fx:id="nameColumn" prefWidth="113.99998982747395" text="player       score" />
               </columns>
             </TableView>
+            <Button fx:id="stopGameButton" mnemonicParsing="false" onAction="#stopGame" prefHeight="25.0" prefWidth="82.0" text="stop game" />
          </children>
       </VBox>
    </left>

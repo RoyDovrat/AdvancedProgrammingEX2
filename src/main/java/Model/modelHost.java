@@ -16,7 +16,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
+import org.bson.Document;
+
 import com.example.App;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 import Server.BookScrabbleHandler;
 import Server.ClientHandler;
@@ -55,6 +61,8 @@ public class modelHost extends Observable implements interfaceModel {
     Set<Socket> sockets;
     Map<String, Integer> nameNumberMap = new HashMap<>();
     char[][] boardChars= new char[15][15];
+    public static String collectionName = "ap";
+    String boardAsString;
 
     public modelHost (int port, modelGuestHandler ch, int MaxThreads) {
         this.port=port;
@@ -157,6 +165,18 @@ public class modelHost extends Observable implements interfaceModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try {
+            updateGuests("host,"+players.get(0));
+            System.out.println("name of host in mhost: "+players.get(0));
+            setChanged();
+            notifyObservers("hostName");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public String getHostName(){
+        return this.players.get(0);
     }
 
     public char[][] getBoardArray(){
@@ -620,10 +640,10 @@ public class modelHost extends Observable implements interfaceModel {
                 }
             }
         
-            String str = String.valueOf(oneDArray);
+            boardAsString = String.valueOf(oneDArray);
             //System.out.println("check word in host: "+str);
             try {
-                updateGuests("updatedBoard,"+str);
+                updateGuests("updatedBoard,"+boardAsString);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -706,6 +726,90 @@ public class modelHost extends Observable implements interfaceModel {
         }
         System.out.println("Curren player name at model host "+ getCurrentPlayer());
         return getCurrentPlayer();
+    }
+    
+    public String arrayNamesToString(ArrayList<String> arrayList) {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            result.append(arrayList.get(i));
+
+            if (i < arrayList.size() - 1) {
+                result.append(",");
+            }
+        }
+        return result.toString();
+    }
+
+    public static String tileMatrixToString(Tile[][] matrix, ArrayList<String> players) {
+    StringBuilder result = new StringBuilder();
+
+    int numPlayers = players.size();
+    int numRows = Math.min(numPlayers, matrix.length);
+
+    for (int rowIndex = 0; rowIndex < numRows; rowIndex++) {
+        Tile[] row = matrix[rowIndex];
+
+        for (int i = 0; i < row.length; i++) {
+            result.append(row[i].getLetter());
+
+            if (i < row.length - 1) {
+                result.append(",");
+            }
+        }
+
+        result.append(":");
+    }
+
+    // Remove the last ":" if the matrix is not empty
+    if (result.length() > 0) {
+        result.deleteCharAt(result.length() - 1);
+    }
+
+    return result.toString();
+}
+
+
+    public static String arrayToString(int[] array) {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < array.length; i++) {
+            result.append(array[i]);
+
+            if (i < array.length - 1) {
+                result.append(",");
+            }
+        }
+        return result.toString();
+    }
+
+    // public String bagToString(){
+
+    // }
+
+    public void saveToDB() {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("Scra");
+        MongoCollection<Document> collection = database.getCollection(collectionName);
+        int serverPort =this.port; 
+        Document document = new Document("Game port" , serverPort);
+        document.append("currentPlayer" ,currentPlayer);
+        document.append("players", arrayNamesToString(players));
+        document.append("boardAsString", boardAsString);
+        document.append("scoreString", arrayToString(score));
+        document.append("bag", arrayToString(bag.getQuantities()));
+        document.append("tiles", tileMatrixToString(letterTiles, players));
+    
+        collection.insertOne(document);
+        mongoClient.close();
+    }
+
+
+    @Override
+    public void stopGame() {
+        //save info
+        saveToDB();
+        System.out.println("game stopping");
     }
 
 }

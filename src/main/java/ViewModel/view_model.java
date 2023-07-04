@@ -31,6 +31,7 @@ public class view_model extends Observable implements Observer{
     int[] scores=  new int[4];
 
     boolean newGameStarted=false;
+    public String hostName;
     
 
     public view_model (interfaceModel m2){
@@ -107,7 +108,11 @@ public class view_model extends Observable implements Observer{
     }
 
     public void vmsetStart(){
-    m.msetStart();
+        m.msetStart();
+    }
+
+    public void stopGame(){
+        m.stopGame();
     }
 
 
@@ -154,6 +159,12 @@ public class view_model extends Observable implements Observer{
                 } 
                 setChanged();
                 notifyObservers("updatedBoard");
+            }
+            if(arg.equals("hostName")){
+                hostName=m.getHostName();
+                System.out.println("name of host in view_model: "+hostName);
+                setChanged();//HERE
+                notifyObservers("hostName");
             }
             if(arg.equals("BoardFromHost")){
                 vmGetCurrentBoard();

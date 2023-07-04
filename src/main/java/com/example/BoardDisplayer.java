@@ -47,12 +47,12 @@ public class BoardDisplayer implements Observer {
     boolean vertical, submitFlag=false, isHost;
     public int mouseRow, port_num;
     public int mouseCol;
-    String myName;
+    String myName, hostName;
 
     @FXML
     String vStrLetterTiles;
     @FXML
-    Button submitButton,  SubmitNameB, SkipTurnButton;
+    Button submitButton,  SubmitNameB, SkipTurnButton, stopGameButton;
   
     @FXML
     TextField vWordInput;
@@ -174,6 +174,10 @@ public class BoardDisplayer implements Observer {
             CurrentPlayer.setVisible(true);
             scoreTable.setVisible(true);
             SubmitNameB.setVisible(false);
+
+            if(myName.equals(hostName)){// button for host only
+                stopGameButton.setVisible(true);
+            }
             redraw();
             getPlayersName();
             vLetterTiles=vm.vmRequestRestartLetterTiles(this.myName);
@@ -269,6 +273,12 @@ public class BoardDisplayer implements Observer {
         redraw();
         vWordInput.setText(""); 
     }
+
+    @FXML
+    public void stopGame(){
+        vm.stopGame();
+    }
+
     @FXML
     public void LeftRightClicked(){
         TileDirection.setText("Horizontal");
@@ -330,6 +340,7 @@ public class BoardDisplayer implements Observer {
         CurrentPlayer.setVisible(false);
         SkipTurnButton.setVisible(false);
         scoreTable.setVisible(false);
+        stopGameButton.setVisible(false);
         boardChars =new char[15][15];
     }
 
@@ -444,6 +455,10 @@ public class BoardDisplayer implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o==vm){
+            if(arg.equals("hostName")){
+                hostName=vm.hostName;
+                System.out.println("name of host in view: "+hostName);
+            }
             if(arg.equals("startNewGame")){
                 setNewGameBoard();
                 vm.setNewGameBoardStarted(false);

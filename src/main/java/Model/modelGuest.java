@@ -32,6 +32,7 @@ public class modelGuest extends Observable implements interfaceModel {
     boolean myTurn = false, stop=false; 
     char[][] boardArray;
     public boolean tilesSentFlag=false;
+    public String hostName;
     
     public modelGuest(int port){
         try {
@@ -53,6 +54,14 @@ public class modelGuest extends Observable implements interfaceModel {
                                 Platform.runLater(() -> {
                                     setChanged();
                                     notifyObservers("startNewGame");
+                                });     
+                            }
+                            if (args[0].equals("host")) {
+                                hostName=args[1];
+                                System.out.println("name of host in mGuest: "+hostName);
+                                Platform.runLater(() -> {
+                                    setChanged();
+                                    notifyObservers("hostName");
                                 });     
                             }
                             if (args[0].equals("updatedBoard")) {
@@ -122,7 +131,10 @@ public class modelGuest extends Observable implements interfaceModel {
         this.respValid = false;
         return this.resp;
     }
-    
+    public String getHostName(){
+        return this.hostName;
+    }
+
     public String CurrentPlayerName(){ //returns the name of the player which is in turn
         out.println(mPlayerName+",requestCurrentPlayer");
         out.flush();
@@ -412,6 +424,11 @@ public class modelGuest extends Observable implements interfaceModel {
     @Override
     public String getCurrentPlayer() {
         return this.CurrentPlayerName;
+    }
+    @Override
+    public void stopGame() {
+        // TODO Auto-generated method stub
+        
     }
 
 }
