@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Observable;
 import java.util.Random;
 import java.util.Scanner;
@@ -17,12 +18,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.example.App;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import Server.BookScrabbleHandler;
 import Server.ClientHandler;
@@ -42,7 +46,7 @@ public class modelHost extends Observable implements interfaceModel {
     String mWordInput;
     String currentPlayer;
     Socket server;
-    boolean flag=false, mIsHost=true, isVertical=false, mValidWord, wordSentFlag;
+    boolean flag=false, mIsHost=true, isVertical=false, mValidWord, wordSentFlag, newGameFlag;
     public boolean tryAgain = false, testMode=false;
     boolean stop;
     Board board=new Board();
@@ -64,7 +68,8 @@ public class modelHost extends Observable implements interfaceModel {
     public static String collectionName = "ap";
     String boardAsString;
 
-    public modelHost (int port, modelGuestHandler ch, int MaxThreads) {
+    public modelHost (int port, modelGuestHandler ch, int MaxThreads, boolean newGame) {
+        this.newGameFlag=newGame;
         this.port=port;
         this.ch=ch;
         ch.setHost(this);
@@ -173,6 +178,9 @@ public class modelHost extends Observable implements interfaceModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if(!newGameFlag){
+            retrieveFromDB(port);
+        }
 
     }
     public String getHostName(){
@@ -211,6 +219,26 @@ public class modelHost extends Observable implements interfaceModel {
         mStrLetterTiles = new String(mCharLetterTiles);
         return mStrLetterTiles;
     }
+
+    public String fillLetterTilesFromBagResumeMode(String nowPlayingName, String tileString) {
+        char[] mCharLetterTiles = new char[7];
+        int playerNum = getCurrentPlayerIndex(nowPlayingName);
+        String[] tiles = tileString.split(",");
+
+        for (int i = 0; i < letterTiles[playerNum].length; i++) {
+            if (letterTiles[playerNum][i] == null && i < tiles.length) {
+                letterTiles[playerNum][i] = bag.getTile(tiles[i].charAt(0));
+            }
+        }
+
+        for (int i = 0; i < letterTiles[playerNum].length; i++) { // for debug
+            mCharLetterTiles[i] = letterTiles[playerNum][i].getLetter();
+        }
+        
+        mStrLetterTiles = new String(mCharLetterTiles);
+        return mStrLetterTiles;
+    }
+
     
     public void removeTilesFromLetterTiles(String nowPlayingName, Word w){//remove tiles after they are used
         int playerNum = getCurrentPlayerIndex(nowPlayingName);
@@ -783,9 +811,42 @@ public class modelHost extends Observable implements interfaceModel {
         return result.toString();
     }
 
-    // public String bagToString(){
+    public void retrieveFromDB(int gamePort) {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("Scra");
+        // Specify your query criteria
+        Bson query = Filters.eq("Game port", gamePort);
 
-    // }
+        // Get the collection based on the collection name
+        MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        // Execute the query and retrieve the result
+        Document result = collection.find(query).first();
+
+        if (result != null) {
+            // Access the retrieved fields from the document
+            String currentPlayer = result.getString("currentPlayer");
+            String players = result.getString("players");
+            String boardAsString = result.getString("boardAsString");
+            String scoreString = result.getString("scoreString");
+            String bag = result.getString("bag");
+            String tiles = result.getString("tiles");
+
+            // Do something with the retrieved data
+            System.out.println("Current Player: " + currentPlayer);
+            System.out.println("Players: " + players);
+            System.out.println("Board: " + boardAsString);
+            System.out.println("Score: " + scoreString);
+            System.out.println("Bag: " + bag);
+            System.out.println("Tiles: " + tiles);
+
+            // Continue processing the retrieved data
+        } else {
+            System.out.println("No document found with the specified criteria.");
+        }
+
+        mongoClient.close();
+    }
 
     public void saveToDB() {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");

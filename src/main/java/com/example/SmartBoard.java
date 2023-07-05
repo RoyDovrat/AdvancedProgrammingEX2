@@ -22,13 +22,14 @@ public class SmartBoard extends AnchorPane {
         super();
         try {
             Random random = new Random();
+            boolean newGameFlag=App.newGame;
             gameEntryController entry= new gameEntryController();
             board = new BoardDisplayer();
             view_model vm;
             System.out.println("view model vm");
             if(App.isHost){ 
                 int port = App.port_num;
-                m= new modelHost(port, new modelGuestHandler(), 2);
+                m= new modelHost(port, new modelGuestHandler(), 2, newGameFlag);
                 m.start();
                 System.out.println("smartBoard port number: "+port);
             }

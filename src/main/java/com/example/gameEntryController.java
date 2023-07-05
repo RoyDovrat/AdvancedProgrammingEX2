@@ -12,7 +12,7 @@ import java.util.Random;
 
 
 public class gameEntryController {
-    public boolean isHost;
+    public boolean isHost, newGame=true;
     public int port_num;
 
     public gameEntryController(){
@@ -20,7 +20,7 @@ public class gameEntryController {
     }
 
     @FXML
-    MenuButton GameMode;
+    MenuButton PlayerMode, GameMode;
     
     @FXML
     MenuButton NumberOfPlayers;
@@ -29,6 +29,10 @@ public class gameEntryController {
     public void switchToMainWindow() throws IOException {
       //  System.out.println("is host value is:"+isHost);
         if(!App.isHost){App.port_guest = setEnterPort();}
+        else if(!newGame){
+            App.setPortNumber(setEnterPort());
+        }
+        App.newGame=newGame;
         App.setRoot("MainWindow");
     }
     @FXML
@@ -38,7 +42,8 @@ public class gameEntryController {
 
     @FXML
     public void HostChosen() throws IOException{
-        GameMode.setText("Host Mode");
+        isHost=true;
+        PlayerMode.setText("Host Mode");
         NumberOfPlayers.setVisible(true);
         System.out.println("gameEntryController: host mode");
         App.setIsHost(true);
@@ -51,15 +56,40 @@ public class gameEntryController {
         portNum.setText("Host number: " + str);
         System.out.println("port number in gameEntry:"+port);
         portNum.setVisible(true);
-
     }
+
     @FXML
     public void GuestChosen(){
+        isHost=false;
         txtEnterPort.setVisible(true);
         NumberOfPlayers.setVisible(false);
         portNum.setVisible(false);
-        GameMode.setText("Guest Mode");
+        PlayerMode.setText("Guest Mode");
         setIsHost(false);
+    }
+
+    @FXML 
+    public void NewGameMode(){
+        newGame=true;
+        GameMode.setText("New Game");
+        if (isHost){
+            txtEnterPort.setVisible(false);
+            portNum.setVisible(true);
+        }
+       
+        else{
+            txtEnterPort.setVisible(true);
+            portNum.setVisible(false);
+        }
+
+    }
+    
+    @FXML 
+    public void ResumeGameMode() throws IOException{
+        newGame=false;
+        txtEnterPort.setVisible(true);
+        portNum.setVisible(false);
+        GameMode.setText("Resume Game");
     }
 
     public int setEnterPort() {

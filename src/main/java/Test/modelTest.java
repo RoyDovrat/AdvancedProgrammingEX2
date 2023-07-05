@@ -7,7 +7,7 @@ import Model.modelGuestHandler;
 import Model.modelHost;
 
 public class modelTest {
-    static modelHost mHost=new modelHost(5000, new modelGuestHandler(), 2);
+    static modelHost mHost=new modelHost(5000, new modelGuestHandler(), 2, true);
     static modelGuest mGuest;
     
     public static boolean setPlayerName_Test(){

@@ -13,10 +13,19 @@
    <center>
       <VBox prefHeight="400.0" prefWidth="675.0" BorderPane.alignment="CENTER">
          <children>
-            <MenuButton fx:id="GameMode" mnemonicParsing="false" text="Game Mode">
+            <MenuButton fx:id="PlayerMode" mnemonicParsing="false" text="Player Mode">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#HostChosen" text="Host Mode" />
                 <MenuItem mnemonicParsing="false" onAction="#GuestChosen" text="Guest Mode" />
+              </items>
+               <VBox.margin>
+                  <Insets left="400.0" />
+               </VBox.margin>
+            </MenuButton>
+            <MenuButton fx:id="GameMode" mnemonicParsing="false" text="Game Mode">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#NewGameMode" text="New Game" />
+                <MenuItem mnemonicParsing="false" onAction="#ResumeGameMode" text="Resume Game" />
               </items>
                <VBox.margin>
                   <Insets left="400.0" />

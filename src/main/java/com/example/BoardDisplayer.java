@@ -180,6 +180,7 @@ public class BoardDisplayer implements Observer {
             }
             redraw();
             getPlayersName();
+            //try {Thread.sleep(2000);} catch (InterruptedException e) {}
             vLetterTiles=vm.vmRequestRestartLetterTiles(this.myName);
             drawLetterTiles(vLetterTiles);
             shutStartButton();

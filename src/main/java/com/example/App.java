@@ -10,7 +10,7 @@ import Model.model;
 import ViewModel.view_model;
 
 public class App extends Application {
-    public static boolean isHost;
+    public static boolean isHost, newGame;
     public static int port_num;
     public static int port_guest, numOfPlayersChosen;
     private static Scene scene;
