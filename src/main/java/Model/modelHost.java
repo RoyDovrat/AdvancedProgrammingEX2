@@ -849,6 +849,18 @@ public class modelHost extends Observable implements interfaceModel {
         notifyObservers("updatedBoard");
     }
     
+    public void updateResumeBag(String bagStr){
+        bag = new Tile.Bag();
+        String[] numbers = bagStr.split(",");
+        int[] result = new int[numbers.length];
+        
+        for (int i = 0; i < numbers.length; i++) {
+            result[i] = Integer.parseInt(numbers[i]);
+        }
+        bag.quantities=result; 
+        System.out.println("bag: "+bag.quantities); 
+    }
+    
     public void retrieveFromDB(int gamePort) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoDatabase database = mongoClient.getDatabase("Scra");
@@ -869,6 +881,7 @@ public class modelHost extends Observable implements interfaceModel {
 
             String scoreString = result.getString("scoreString");
             String bag = result.getString("bag");
+
             String tiles = result.getString("tiles");
 
             // Do something with the retrieved data 
