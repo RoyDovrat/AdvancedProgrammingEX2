@@ -209,6 +209,10 @@ public class Board {
 		return sum;
 	}
 	
+	public void placeTiles(Tile tile, int row, int col){
+		tiles[row][col]=tile;
+	}
+
 	public int tryPlaceWord(Word w) {
 		
 		Tile[] ts = w.getTiles();
@@ -223,7 +227,7 @@ public class Board {
 		Word test=new Word(ts, w.getRow(), w.getCol(), w.isVertical()); 
 		
 		int sum=0;				
-		if(boardLegal(test) ) {
+		if(boardLegal(test)) {
 			ArrayList<Word> newWords=getWords(test);
 			for(Word nw : newWords) {				
 				if(dictionaryLegal(nw))

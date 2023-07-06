@@ -15,7 +15,7 @@ public class Tile {
 	private ReadOnlyStringWrapper letterProperty;
     private ReadOnlyIntegerWrapper scoreProperty;
 	
-	private Tile(char letter, int score) {
+	Tile(char letter, int score) {
 		super();
 		this.letter = letter;
 		this.score = score;

@@ -826,9 +826,18 @@ public class modelHost extends Observable implements interfaceModel {
     
     public void updateResumeBoard(String boardAsString){
         int index = 0;
+        board=new Board();
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 boardChars[i][j] = boardAsString.charAt(index++); 
+            }
+        }
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                if(boardChars[i][j]!='0'){
+                    Tile tile= new Tile(boardChars[i][j], 0);
+                    board.placeTiles(tile, i, j); 
+                }
             }
         }
         try {
