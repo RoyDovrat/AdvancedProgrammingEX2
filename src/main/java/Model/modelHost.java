@@ -857,8 +857,7 @@ public class modelHost extends Observable implements interfaceModel {
         for (int i = 0; i < numbers.length; i++) {
             result[i] = Integer.parseInt(numbers[i]);
         }
-        bag.quantities=result; 
-        System.out.println("bag: "+bag.quantities); 
+        bag.quantities=result;
     }
     
     public void retrieveFromDB(int gamePort) {
@@ -880,7 +879,8 @@ public class modelHost extends Observable implements interfaceModel {
             updateResumeBoard(boardAsString);
 
             String scoreString = result.getString("scoreString");
-            String bag = result.getString("bag");
+            String bagStr = result.getString("bag");
+            updateResumeBag(bagStr);
 
             String tiles = result.getString("tiles");
 
