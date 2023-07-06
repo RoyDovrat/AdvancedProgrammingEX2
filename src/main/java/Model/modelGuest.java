@@ -50,6 +50,12 @@ public class modelGuest extends Observable implements interfaceModel {
                             //System.out.println("response in guest"+res);
                             setResponse(res);
                             String [] args= res.split(",");
+                            if(args[0].equals("resumeMode")){ 
+                                Platform.runLater(() -> {
+                                    setChanged();
+                                    notifyObservers("resumeMode");
+                                }); 
+                            }
                             if (args[0].equals("startNewGame")) {
                                 Platform.runLater(() -> {
                                     setChanged();

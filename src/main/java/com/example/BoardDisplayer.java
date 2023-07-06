@@ -44,7 +44,7 @@ public class BoardDisplayer implements Observer {
     view_model vm;  
     int cCol, cRow, numOfPlayersChosen;
     char[] vLetterTiles;
-    boolean vertical, submitFlag=false, isHost;
+    boolean vertical, submitFlag=false, isHost, resumeMode=false;
     public int mouseRow, port_num;
     public int mouseCol;
     String myName, hostName;
@@ -342,7 +342,8 @@ public class BoardDisplayer implements Observer {
         SkipTurnButton.setVisible(false);
         scoreTable.setVisible(false);
         stopGameButton.setVisible(false);
-        boardChars =new char[15][15];
+        
+        //boardChars =new char[15][15];
     }
 
     public void redraw(){
@@ -414,7 +415,7 @@ public class BoardDisplayer implements Observer {
                     
                     boolean taken=false;
                      
-                    if (submitFlag==true){
+                    if (submitFlag || resumeMode){ //
                         if (boardChars[i][j] != '0'){
                             String name_letter = "./resources2/" +boardChars[i][j] +".jpg";
                             try {
@@ -456,6 +457,9 @@ public class BoardDisplayer implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o==vm){
+            if(arg.equals("resumeMode")){
+                resumeMode=true;
+            }
             if(arg.equals("hostName")){
                 hostName=vm.hostName;
                 System.out.println("name of host in view: "+hostName);

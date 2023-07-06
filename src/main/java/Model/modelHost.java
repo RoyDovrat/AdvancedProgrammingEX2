@@ -68,6 +68,9 @@ public class modelHost extends Observable implements interfaceModel {
     public static String collectionName = "ap";
     String boardAsString;
 
+    //Resume Variables:
+    String ResumeCurrentPlayer;
+
     public modelHost (int port, modelGuestHandler ch, int MaxThreads, boolean newGame) {
         this.newGameFlag=newGame;
         this.port=port;
@@ -179,9 +182,16 @@ public class modelHost extends Observable implements interfaceModel {
             e.printStackTrace();
         }
         if(!newGameFlag){
+            setChanged();
+            notifyObservers("resumeMode");
+            try {
+                updateGuests("resumeMode");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
             retrieveFromDB(port);
         }
-
     }
     public String getHostName(){
         return this.players.get(0);
@@ -271,7 +281,6 @@ public class modelHost extends Observable implements interfaceModel {
                 }
             }
         }
-
         // Display the contents of wordTiles
         for (Tile tile : wordTiles) {
             System.out.println("Letter: " + tile.getLetter() + ", Score: " + tile.getScore());
@@ -279,7 +288,6 @@ public class modelHost extends Observable implements interfaceModel {
         return wordTiles;
     }
       
-
     // Method to determine the next player's turn
     public void nextPlayerTurn() {
         if(!this.tryAgain){
@@ -297,8 +305,6 @@ public class modelHost extends Observable implements interfaceModel {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }                    
-            // setChanged();
-            // notifyObservers();
             System.out.println("corrent player is  "+currentPlayer);
         }
     }
@@ -316,8 +322,7 @@ public class modelHost extends Observable implements interfaceModel {
         System.out.println("model host- current player");
         System.out.println("currentTurnIndex"+currentTurnIndex);
         System.out.println("players"+players.toString());
-        return players.get(currentTurnIndex);
- 
+        return players.get(currentTurnIndex); 
     }
     
     public String getCurrentPlayer(){
@@ -382,7 +387,6 @@ public class modelHost extends Observable implements interfaceModel {
         }
         return getBoardChars();
     }
-    
 
     @Override
     public void setPlayerName(String Name) { //send name to host
@@ -797,8 +801,7 @@ public class modelHost extends Observable implements interfaceModel {
     return result.toString();
 }
 
-
-    public static String arrayToString(int[] array) {
+     public static String arrayToString(int[] array) {
         StringBuilder result = new StringBuilder();
 
         for (int i = 0; i < array.length; i++) {
@@ -811,28 +814,55 @@ public class modelHost extends Observable implements interfaceModel {
         return result.toString();
     }
 
+    public void updateResumeCurrentPlayer(String ResumeCurrentPlayer){
+        currentPlayer=ResumeCurrentPlayer;
+        try {
+            updateGuests("currentPlayer,"+ResumeCurrentPlayer);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateResumeBoard(String boardAsString){
+        int index = 0;
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                boardChars[i][j] = boardAsString.charAt(index++); 
+            }
+        }
+        try {
+            updateGuests("updatedBoard,"+boardAsString);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setChanged();
+        notifyObservers("updatedBoard");
+    }
+    
     public void retrieveFromDB(int gamePort) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoDatabase database = mongoClient.getDatabase("Scra");
-        // Specify your query criteria
         Bson query = Filters.eq("Game port", gamePort);
-
-        // Get the collection based on the collection name
         MongoCollection<Document> collection = database.getCollection(collectionName);
-
         // Execute the query and retrieve the result
         Document result = collection.find(query).first();
 
         if (result != null) {
             // Access the retrieved fields from the document
-            String currentPlayer = result.getString("currentPlayer");
+            ResumeCurrentPlayer = result.getString("currentPlayer");
+            updateResumeCurrentPlayer(ResumeCurrentPlayer);
+
             String players = result.getString("players");
-            String boardAsString = result.getString("boardAsString");
+
+            boardAsString = result.getString("boardAsString");
+            updateResumeBoard(boardAsString);
+
             String scoreString = result.getString("scoreString");
             String bag = result.getString("bag");
             String tiles = result.getString("tiles");
 
-            // Do something with the retrieved data
+            // Do something with the retrieved data 
             System.out.println("Current Player: " + currentPlayer);
             System.out.println("Players: " + players);
             System.out.println("Board: " + boardAsString);
@@ -860,7 +890,6 @@ public class modelHost extends Observable implements interfaceModel {
         document.append("scoreString", arrayToString(score));
         document.append("bag", arrayToString(bag.getQuantities()));
         document.append("tiles", tileMatrixToString(letterTiles, players));
-    
         collection.insertOne(document);
         mongoClient.close();
     }
