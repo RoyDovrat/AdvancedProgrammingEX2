@@ -135,7 +135,7 @@ public class BoardDisplayer implements Observer {
         redraw();
     }
     
-    public void submitNameFunc(){
+    public void submitNameFunc(){ //hereeeeeeeeeeee
         this.myName = PlayerName.getText();
         vm.vmSetPlayerName();
         System.out.println("submit pressed");
@@ -182,6 +182,8 @@ public class BoardDisplayer implements Observer {
             getPlayersName();
             //try {Thread.sleep(2000);} catch (InterruptedException e) {}
             vLetterTiles=vm.vmRequestRestartLetterTiles(this.myName);
+            System.out.println("for debug in board displyer: got tiles");
+            System.out.println(vLetterTiles);
             drawLetterTiles(vLetterTiles);
             shutStartButton();
             SkipTurnButton.setVisible(true);

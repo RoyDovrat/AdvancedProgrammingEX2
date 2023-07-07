@@ -70,6 +70,7 @@ public class modelHost extends Observable implements interfaceModel {
 
     //Resume Variables:
     String ResumeCurrentPlayer;
+    String[] ResumePlayers;
 
     public modelHost (int port, modelGuestHandler ch, int MaxThreads, boolean newGame) {
         this.newGameFlag=newGame;
@@ -202,6 +203,9 @@ public class modelHost extends Observable implements interfaceModel {
     }
 
     public String restartLetterTiles(String nowPlayingName){ 
+        if(!newGameFlag){
+            return mResumeRestartLetterTiles(nowPlayingName);
+        }
         char[] mCharLetterTiles=new char[7];
         int playerNum = getCurrentPlayerIndex(nowPlayingName);
         for (int i = 0; i < letterTiles[playerNum].length; i++) {
@@ -729,6 +733,9 @@ public class modelHost extends Observable implements interfaceModel {
 
     @Override
     public char[] mRequestRestartLetterTiles(String nowPlayingName) {
+        if(!newGameFlag){
+            return mResumeRestartLetterTiles(nowPlayingName).toCharArray();
+        }
         return restartLetterTiles(nowPlayingName).toCharArray();
     }
 
@@ -871,6 +878,58 @@ public class modelHost extends Observable implements interfaceModel {
         setChanged();
         notifyObservers(" ");
     }
+
+    public void updateResumePlayers(String input) {
+        ResumePlayers = input.split(",");
+        
+    }
+
+    public void updateResumeTiles(String tilesStr){
+        //seperate tiles to char arrays:
+        String[] arrayStrings = tilesStr.split(":");
+        char[][] matrixTiles = new char[arrayStrings.length][];
+        
+        for (int i = 0; i < arrayStrings.length; i++) {
+            String[] charStrings = arrayStrings[i].split(",");
+            matrixTiles[i] = new char[charStrings.length];
+            for (int j = 0; j < charStrings.length; j++) {
+                matrixTiles[i][j] = charStrings[j].charAt(0);
+            }
+        }
+
+        int playerIndex=0;
+        for(int i=0; i<players.size(); i++){
+            for(int j=0; j<players.size(); j++){
+                if(players.get(i).equals(ResumePlayers[j])){
+                    playerIndex=j;
+                }
+            }
+            for (int j = 0; j < letterTiles[i].length; j++) {
+                letterTiles[i][j] = bag.getTile(matrixTiles[playerIndex][j]);
+                
+            } 
+        }
+        System.out.println(players.get(0)+ " tiles:");
+        for(int i=0; i<7; i++){
+            System.out.println(letterTiles[0][i].getLetter());
+        }
+
+        System.out.println(players.get(1)+ " tiles:");
+        for(int i=0; i<7; i++){
+            System.out.println(letterTiles[1][i].getLetter());
+        }
+    }
+
+    public String mResumeRestartLetterTiles(String nowPlayingName){
+        char[] mCharLetterTiles=new char[7];
+        int playerNum = getCurrentPlayerIndex(nowPlayingName);
+        for (int i = 0; i < letterTiles[playerNum].length; i++) { //for debug
+            mCharLetterTiles[i]=letterTiles[playerNum][i].getLetter();  
+        }
+        mStrLetterTiles = new String(mCharLetterTiles);
+        return mStrLetterTiles;
+    }
+
     
     public void retrieveFromDB(int gamePort) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
@@ -885,26 +944,28 @@ public class modelHost extends Observable implements interfaceModel {
             ResumeCurrentPlayer = result.getString("currentPlayer");
             updateResumeCurrentPlayer(ResumeCurrentPlayer);
 
-            String players = result.getString("players");
+            String playersStr = result.getString("players");
+            updateResumePlayers(playersStr);
 
             String scoreString = result.getString("scoreString");
             updateResumeScores(scoreString);
 
+            String tilesStr = result.getString("tiles");
+            updateResumeTiles(tilesStr);
+            
             String bagStr = result.getString("bag");
             updateResumeBag(bagStr);
-
-            String tiles = result.getString("tiles");
 
             boardAsString = result.getString("boardAsString");
             updateResumeBoard(boardAsString);
 
             // Do something with the retrieved data 
-            System.out.println("Current Player: " + currentPlayer);
-            System.out.println("Players: " + players);
+            System.out.println("Current Player: " + ResumeCurrentPlayer);
+            System.out.println("Players: " + playersStr);
             System.out.println("Board: " + boardAsString);
             System.out.println("Score: " + scoreString);
-            System.out.println("Bag: " + bag);
-            System.out.println("Tiles: " + tiles);
+            System.out.println("Bag: " + bagStr);
+            System.out.println("Tiles: " + tilesStr);
 
             // Continue processing the retrieved data
         } else {

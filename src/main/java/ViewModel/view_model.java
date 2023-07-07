@@ -150,7 +150,7 @@ public class view_model extends Observable implements Observer{
             }
             if (arg.equals("resumeMode")){
                 setChanged();
-                notifyObservers("startNewGame");
+                notifyObservers("resumeMode");
             }
             if(arg.equals("updatedBoard")){
                 boardChars=m.getBoardArray();

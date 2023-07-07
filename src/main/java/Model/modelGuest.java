@@ -187,7 +187,12 @@ public class modelGuest extends Observable implements interfaceModel {
         //System.out.println("name in model: "+mPlayerName);
         out.println(mPlayerName +",submitName,"+mPlayerName);
         out.flush();
-        
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        };
         String str = getResponseFromHost();
         String [] args= str.split(",");
         args[0].equals(this.mPlayerName);
@@ -201,6 +206,12 @@ public class modelGuest extends Observable implements interfaceModel {
     public void msetStart(){
         out.println(mPlayerName +",getTiles");
         out.flush();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         strTiles= getResponseFromHost();
         System.out.println(strTiles);
         tilesSentFlag = true;
@@ -209,15 +220,21 @@ public class modelGuest extends Observable implements interfaceModel {
    
     @Override
     public boolean mCheckIfEnoughPlayers(){  
-            System.out.println("guest mCheckIfEnoughPlayers");
-            out.println(mPlayerName+",joingame");//send to host
-            out.flush();
-            String strFromHost= getResponseFromHost();
-            System.out.println("guest mCheckIfEnoughPlayers" + strFromHost);
-            String [] args= strFromHost.split(",");
-            if( args[0].equals(mPlayerName) && args[1].equals("enough")){
-                return args[2].equals("true");
-            }
+        System.out.println("guest mCheckIfEnoughPlayers");
+        out.println(mPlayerName+",joingame");//send to host
+        out.flush();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        };
+        String strFromHost= getResponseFromHost();
+        System.out.println("guest mCheckIfEnoughPlayers" + strFromHost);
+        String [] args= strFromHost.split(",");
+        if( args[0].equals(mPlayerName) && args[1].equals("enough")){
+            return args[2].equals("true");
+        }
         return false;
     }
     
@@ -405,25 +422,26 @@ public class modelGuest extends Observable implements interfaceModel {
     
     @Override
     public int[] getScores() {
-        out.println(CurrentPlayerName+",updateScores");
-        out.flush();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        strTiles= getResponseFromHost();
-        String trimmedString = strTiles.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+        // out.println(CurrentPlayerName+",updateScores");
+        // out.flush();
+        // try {
+        //     Thread.sleep(1000);
+        // } catch (InterruptedException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
+        // strTiles= getResponseFromHost();
+        // String trimmedString = strTiles.replace("[", "").replace("]", "").replaceAll("\\s+", "");
         
-        // Split the string by commas
-        String[] numbers = trimmedString.split(",");
+        // // Split the string by commas
+        // String[] numbers = trimmedString.split(",");
         
-        // Create an integer array and parse the numbers
-        int[] intArray = new int[numbers.length];
-        for (int i = 0; i < numbers.length; i++) {
-            intArray[i] = Integer.parseInt(numbers[i]);
-        }
+        // // Create an integer array and parse the numbers
+        // int[] intArray = new int[numbers.length];
+        // for (int i = 0; i < numbers.length; i++) {
+        //     intArray[i] = Integer.parseInt(numbers[i]);
+        // }
+        int[] intArray=new int[4];
         return intArray;
     }
 
