@@ -422,26 +422,26 @@ public class modelGuest extends Observable implements interfaceModel {
     
     @Override
     public int[] getScores() {
-        // out.println(CurrentPlayerName+",updateScores");
-        // out.flush();
-        // try {
-        //     Thread.sleep(1000);
-        // } catch (InterruptedException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // }
-        // strTiles= getResponseFromHost();
-        // String trimmedString = strTiles.replace("[", "").replace("]", "").replaceAll("\\s+", "");
+        out.println(CurrentPlayerName+",updateScores");
+        out.flush();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        strTiles= getResponseFromHost();
+        String trimmedString = strTiles.replace("[", "").replace("]", "").replaceAll("\\s+", "");
         
-        // // Split the string by commas
-        // String[] numbers = trimmedString.split(",");
+        // Split the string by commas
+        String[] numbers = trimmedString.split(",");
         
-        // // Create an integer array and parse the numbers
-        // int[] intArray = new int[numbers.length];
-        // for (int i = 0; i < numbers.length; i++) {
-        //     intArray[i] = Integer.parseInt(numbers[i]);
-        // }
-        int[] intArray=new int[4];
+        // Create an integer array and parse the numbers
+        int[] intArray = new int[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            intArray[i] = Integer.parseInt(numbers[i]);
+        }
+        //int[] intArray=new int[4];
         return intArray;
     }
 
